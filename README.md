@@ -4,3 +4,4 @@ A Flutter Navigator which combines the capabilities of the [new Declarative](htt
 
 ## Example
 
+<img src="https://raw.githubusercontent.com/LucasAschenbach/advanced_navigator/main/assets/example_preview.gif" heigh="500em">
