@@ -301,7 +301,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> {
   get routerDelegate => _routerDelegate;
   RouterDelegate _routerDelegate;
 
-  DefaultInformationProvider _informationProvider;
+  PlatformRouteInformationProvider _informationProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +323,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> {
     );
 
     // prevent state-loss on hot reload: ??=
-    _informationProvider ??= DefaultInformationProvider(RouteInformation(
+    _informationProvider ??= PlatformRouteInformationProvider(initialRouteInformation: RouteInformation(
       location: widget.initialLocation ?? AdvancedNavigator.defaultPathName,
     ));
 
