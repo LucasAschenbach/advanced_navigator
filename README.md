@@ -11,14 +11,6 @@ A Flutter Navigator which combines the capabilities of the [new Declarative](htt
   * [1. Persistent Side Drawer](https://github.com/LucasAschenbach/advanced_navigator#1-persistent-side-drawer)
   * [2. Encapsulated Navigation](https://github.com/LucasAschenbach/advanced_navigator#2-encapsulated-navigation)
   * [3. URL synching](https://github.com/LucasAschenbach/advanced_navigator#3-url-synching)
-  
-
-### 1. Persistent Side Drawer
-
-### 2. Encapsulated Navigation
-
-### 3. URL synching
-
 
 ## Overview
 
