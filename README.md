@@ -2,11 +2,29 @@
 
 A Flutter Navigator which combines the capabilities of the [new Declarative](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) and the existing Imperative Navigator API into one easy-to-use widget. This widget implements the new Router widget wrapped around a Navigator to allow for full stack manipulation operations, URL synchronization with browsers and better nesting. All endpoints of the Imperative API (i.e. push, pushNamed, popAndPushNamed, etc.) continue to work under this widget.
 
-## Usage
+**Table of Contents**
+* [Overview](https://github.com/LucasAschenbach/advanced_navigator#overview)
+  * [Paths](https://github.com/LucasAschenbach/advanced_navigator#paths)
+  * [Imperative API](https://github.com/LucasAschenbach/advanced_navigator#imperative-api)
+  * [Nesting](https://github.com/LucasAschenbach/advanced_navigator#nesting)
+* [Use Cases](https://github.com/LucasAschenbach/advanced_navigator#use-cases)
+  * [1. Persistent Side Drawer](https://github.com/LucasAschenbach/advanced_navigator#1-persistent-side-drawer)
+  * [2. Encapsulated Navigation](https://github.com/LucasAschenbach/advanced_navigator#2-encapsulated-navigation)
+  * [3. URL synching](https://github.com/LucasAschenbach/advanced_navigator#3-url-synching)
+  
+
+### 1. Persistent Side Drawer
+
+### 2. Encapsulated Navigation
+
+### 3. URL synching
+
+
+## Overview
 
 The advanced navigator widget is a wrapper for a router and navigator and makes extensive use of the newly added declarative navigator API. 
 
-#### Paths
+### Paths
 A significant accomplishment of the new declarative API is that it allows for unrestricted page stack manipulation. The `AdvancedNavigator` widget provides a simple interface for controlling such page stack manipulations through the `paths` argument.
 `paths` is similar to the `routes` argument used by the old navigator widget in that it specifies a map of string URIs pointing towards a path builder function which is executed upon reception of a navigation request with the associated URI. The returned page list will then replace the current page stack of the navigator.
 
@@ -43,7 +61,7 @@ AdvancedNavigator(
 ),
 ```
 
-#### Imerative API
+### Imperative API
 
 The advanced navigator implements an imperative API for remotely manipulating the page stack from anywhere in the widget tree. This new API exposes the following endpoints:
 | Endpoint | Description |
@@ -58,7 +76,7 @@ The advanced navigator implements an imperative API for remotely manipulating th
 
 *Note: Since `AdvancedNavigator` wraps a `Navigator`, all navigation operations which are relying on the old imperative API such as `Navigator.popAndPushNamed(context, ...)` will continue to work under this widget.*
 
-#### Nesting
+### Nesting
 
 Advanced Navigator supports global URI navigation, even across nested navigators. This works by maintaining an active channel of communication between navigator to update each other on new navigation events.
 
@@ -66,11 +84,11 @@ Since Flutter creates its element tree recursively, a navigator can only know ab
 
 ## Use Cases
 
-#### 1. Persistent Side Drawer
+### 1. Persistent Side Drawer
 
-#### 2. Encapsulated Navigation
+### 2. Encapsulated Navigation
 
-#### 3. URL synching
+### 3. URL synching
 
 <img src="https://raw.githubusercontent.com/LucasAschenbach/advanced_navigator/main/assets/example_preview.gif" heigh="500em">
 
