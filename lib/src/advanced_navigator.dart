@@ -180,9 +180,8 @@ class AdvancedNavigator extends StatefulWidget {
       }
     });
     if (strPattern.isEmpty) strPattern = '/';
-    strPattern = '^$strPattern\$';
     var pattern = RegExp(strPattern);
-    return PathGroup(pattern, args: args);
+    return PathGroup(pattern, length: uri.pathSegments.length, args: args);
   }
 
   /// The router delegate from the closest instance of this class that encloses
@@ -433,6 +432,9 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
     // persist state on rebuild: ??=
     _routerDelegate ??= DefaultRouterDelegate(
       context: context,
+      onNestedPathUpdate: (configuration) {
+        observedRouteInformation = configuration;
+      },
       pages: widget.pages,
       paths: widget.paths.map(
         (key, value) => MapEntry(AdvancedNavigator.parsePath(key), value),
@@ -487,11 +489,14 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
 @immutable
 class PathGroup {
   const PathGroup(this.pattern, {
+    @required this.length,
     this.args = const {},
   }) : assert(pattern != null),
+       assert(length != null),
        assert(args != null);
 
   final RegExp pattern;
+  final int length;
   final Map<int, String> args;
 }
 
@@ -512,6 +517,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
   DefaultRouterDelegate({
     this.context,
+    this.onNestedPathUpdate,
     this.pages,
     this.paths,
     this.onGeneratePath,
@@ -534,6 +540,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
        assert(observers != null);
        
   final BuildContext context;
+  final void Function(RouteInformation) onNestedPathUpdate;
   final Map<String, Page Function(Map<String, dynamic>)> pages;
   final Map<PathGroup, List<Page> Function(Map<String, dynamic>)> paths;
   final PathFactory onGeneratePath;
@@ -641,21 +648,47 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       return SynchronousFuture(null);
     }
     List<Page> changedPages;
+    RouteInformation currentInternalPath;
+    RouteInformation currentNestedPath;
     // check for match in paths map
     if (paths.isNotEmpty) {
       // find matching reference
       var uri = Uri.parse(configuration.location);
-      var pathGroup = paths.keys.firstWhere((pathGroup) {
-        return pathGroup.pattern.hasMatch(uri.path);
-      }, orElse: () => null);
+      PathGroup pathGroup;
+      String internalPath;
+      String nestedPath;
+      paths.keys.forEach((iterationPathGroup) {
+        var match = iterationPathGroup.pattern.matchAsPrefix(uri.path);
+        if (match != null) {
+          // longest matched path takes precidence
+          if (iterationPathGroup.length > (pathGroup?.length ?? -1)) {
+            var iterationNestedPath = match.input.substring(match.end);
+            // pattern must match entire string or be followed by '/'
+            if (iterationNestedPath.isEmpty || iterationNestedPath[0] == '/') {
+              pathGroup = iterationPathGroup;
+              internalPath = match.group(0);
+              nestedPath = iterationNestedPath.isEmpty 
+                  ? null
+                  : iterationNestedPath;
+            }
+          }
+        }
+      });
       // parse args
       if (pathGroup != null) {
-        var args = Map<String, String>();
+        Map<String, String> args = {};
         args.addAll(uri.queryParameters);
         args.addAll(pathGroup.args.map((pos, argName) => MapEntry(
           argName, uri.pathSegments[pos]
         )));
         changedPages = paths[pathGroup](args);
+        currentInternalPath = RouteInformation(
+          location: internalPath,
+          state: configuration.state,
+        );
+        currentNestedPath = nestedPath == null
+            ? null
+            : RouteInformation(location: nestedPath);
       }
     }
     // generate path with callback
@@ -704,8 +737,10 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       }
     }
     assert(changedPages != null);
-    _currentInternalPath = configuration;
+    _currentNestedPath = currentNestedPath;
+    _currentInternalPath = currentInternalPath ?? configuration;
     _pages = changedPages;
+    onNestedPathUpdate(_currentNestedPath);
     notifyListeners();
     return SynchronousFuture(null);
   }

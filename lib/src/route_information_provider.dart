@@ -14,19 +14,19 @@ part of 'advanced_navigator.dart';
 class RouteInformationObservable {
   List<RouteInformationObserver> _observers = [];
 
-  RouteInformation _currentRouteInformation;
-  get currentRouteInformation => _currentRouteInformation;
-  set currentRouteInformation(RouteInformation value) {
-    if (_currentRouteInformation == value) {
+  RouteInformation _observedRouteInformation;
+  get observedRouteInformation => _observedRouteInformation;
+  set observedRouteInformation(RouteInformation value) {
+    if (_observedRouteInformation == value) {
       return;
     }
-    _currentRouteInformation = value;
+    _observedRouteInformation = value;
     notifyObservers();
   }
 
   void notifyObservers() {
     for (var observer in _observers) {
-      observer.didPushRouteInformation(_currentRouteInformation);
+      observer.didPushRouteInformation(_observedRouteInformation);
     }
   }
 
@@ -63,9 +63,14 @@ class NestedRouteInformationProvider extends RouteInformationProvider
     with RouteInformationObserver, ChangeNotifier {
   NestedRouteInformationProvider(
     this._parent, {
-      RouteInformation initialRouteInformation
-    }) : assert(_parent != null),
-         _value = _parent.currentNestedPath ?? initialRouteInformation;
+    @required RouteInformation initialRouteInformation,
+  }) : assert(_parent != null),
+       assert(initialRouteInformation != null) {
+    _value = _initialRouteInformation = _parent.currentNestedPath
+        ?? initialRouteInformation;
+  }
+
+  RouteInformation _initialRouteInformation;
 
   AdvancedNavigatorState get parent => _parent;
   AdvancedNavigatorState _parent;
@@ -84,7 +89,7 @@ class NestedRouteInformationProvider extends RouteInformationProvider
   void _parentReportsNewRouteInformation(RouteInformation routeInformation) {
     if (_value == routeInformation)
       return;
-    _value = routeInformation;
+    _value = routeInformation ?? _initialRouteInformation;
     notifyListeners();
   }
 
