@@ -698,7 +698,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
           throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary('AdvancedNavigator.onGeneratePath was null but the referenced path had no corresponding path in the app.'),
             ErrorDescription(
-              'The referenced path was: "${configuration.location}"'
+              'The referenced path was: "${configuration.location}" '
               'To use the AdvancedNavigator API with named paths (openNamed), '
               'the AdvancedNavigator must be provided with either a matching reference '
               'in the paths map or an onGeneratePath handler.\n'
