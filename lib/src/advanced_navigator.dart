@@ -195,10 +195,13 @@ class AdvancedNavigator extends StatefulWidget {
   ///   ..pop()
   ///   ..pushNamed('/settings');
   /// ```
-  ///
-  /// If `rootNavigator` is set to true, the delegate from the furthest instance
-  /// of this class is given instead. Useful for pushing contents above all
-  /// subsequent instances of [AdvancedNavigator].
+  /// 
+  /// The `skip` argument denominates the number of instances to be skipped when
+  /// searching up the widget tree for an instance of [AdvancedNavigator]. 
+  /// 
+  /// If `rootNavigator` is set to true, `skip` is ignored and the state from
+  /// the furthest instance of this class is given instead. Useful for pushing
+  /// contents above all subsequent instances of [AdvancedNavigator].
   ///
   /// If there is no [AdvancedNavigator] in the give `context`, this function
   /// will throw a [FlutterError] in debug mode, and an exception in release
@@ -206,17 +209,13 @@ class AdvancedNavigator extends StatefulWidget {
   static AdvancedNavigatorState of(
     BuildContext context, {
     bool rootNavigator = false,
+    int skip = 0,
   }) {
-    AdvancedNavigatorState navigator;
-    if (context is StatefulElement && context.state is AdvancedNavigatorState) {
-      navigator = context.state as AdvancedNavigatorState;
-    }
-    if (rootNavigator) {
-      navigator = context.findRootAncestorStateOfType<AdvancedNavigatorState>();
-    } else {
-      navigator = navigator ?? context.findAncestorStateOfType<AdvancedNavigatorState>();
-    }
-
+    AdvancedNavigatorState navigator = AdvancedNavigator.maybeOf(
+      context,
+      rootNavigator: rootNavigator,
+      skip: skip,
+    );
     assert(() {
       if (navigator == null) {
         throw FlutterError(
@@ -245,25 +244,40 @@ class AdvancedNavigator extends StatefulWidget {
   /// }
   /// ```
   /// 
-  /// If `rootNavigator` is set to true, the delegate from the furthest instance
-  /// of this class is given instead. Useful for pushing contents above all 
-  /// subsequent instances of [AdvancedNavigator].
+  /// The `skip` argument denominates the number of instances to be skipped when
+  /// searching up the widget tree for an instance of [AdvancedNavigator]. 
+  /// 
+  /// If `rootNavigator` is set to true, `skip` is ignored and the state from
+  /// the furthest instance of this class is given instead. Useful for pushing
+  /// contents above all subsequent instances of [AdvancedNavigator].
   ///
   /// Will return null if there is no ancestor [AdvancedNavigator] in the
   /// `context`.
   static AdvancedNavigatorState maybeOf(
-      BuildContext context, {
-        bool rootNavigator = false,
-      }) {
-    // Handles the case where the input context is a navigator element.
+    BuildContext context, {
+    bool rootNavigator = false,
+    int skip = 0,
+  }) {
+    assert(rootNavigator != null);
+    assert(rootNavigator || skip != null);
     AdvancedNavigatorState navigator;
+    // Handles the case where the input context is a navigator element.
     if (context is StatefulElement && context.state is AdvancedNavigatorState) {
       navigator = context.state as AdvancedNavigatorState ?? navigator;
     }
     if (rootNavigator) {
       navigator = context.findRootAncestorStateOfType<AdvancedNavigatorState>() ?? navigator;
     } else {
-      navigator = navigator ?? context.findAncestorStateOfType<AdvancedNavigatorState>();
+      context.visitAncestorElements((element) {
+        if (element is StatefulElement && element.state is AdvancedNavigatorState) {
+          if (skip <= 0) {
+            navigator = element.state;
+            return false;
+          }
+          skip--;
+        }
+        return true;
+      });
     }
     return navigator;
   }
