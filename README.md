@@ -4,7 +4,7 @@ This package contains a fully fetched implementation of the new [Navigator 2.0](
 
 **Table of Contents**
 * [Overview](https://github.com/LucasAschenbach/advanced_navigator#overview)
-  * [Paths](https://github.com/LucasAschenbach/advanced_navigator#paths)
+  * [Paths, Pages & Routes](https://github.com/LucasAschenbach/advanced_navigator#paths)
   * [Navigation API](https://github.com/LucasAschenbach/advanced_navigator#navigation-api)
   * [Nesting](https://github.com/LucasAschenbach/advanced_navigator#nesting)
 * [Use Cases](https://github.com/LucasAschenbach/advanced_navigator#use-cases)
@@ -18,11 +18,35 @@ This package contains a fully fetched implementation of the new [Navigator 2.0](
 
 The advanced navigator widget is a wrapper for a router and navigator and makes extensive use of the newly added declarative navigator API. 
 
-### Paths
-A significant accomplishment of the new declarative API is that it allows for unrestricted page stack manipulation. The `AdvancedNavigator` widget provides a simple interface for controlling such page stack manipulations through the `paths` argument.
-This is similar to the `routes` argument used by the old navigator widget in that it specifies a map of string URIs pointing towards a path builder function which is executed upon reception of a navigation request with the associated URI. The returned page list will then replace the current page stack of the navigator.
+### Paths, Pages & Routes
 
-Advanced navigator has built in argument parsing for extracting arguments such as id's directly from the provided URI. In the path name, arguments are marked with enclosing parentheses `.../{argName}/...` and can be read from the args argument in the path builder function to be used for building the page stack:
+#### Paths
+
+A significant accomplishment of the new declarative API is that it allows for unrestricted page stack manipulation. The `AdvancedNavigator` widget provides a simple interface for controlling such page stack manipulations through the `paths` argument. It takes a map of unique string identifiers each associated with a path builder function whose return value will replace the current page history whenever `openNamed()` is called with the associated path name. 
+
+AdvancedNavigator expects each requested path name to be in the standard [URI](https://tools.ietf.org/html/rfc2396) format and will parse it as such. Therefore, to take full advantage of this widget it is recommended to define path names using that format.
+
+Example:
+
+| ✔️ Do | ❌ Don't |
+| --- | --- |
+| `'/'` | `''` |
+| `'/movies'` | `'/movies/'` |
+| `'/settings/general'` | `'settings-general'` |
+| `'/recommendations?res=50'` | `'/recommendations/?res=50'` |
+
+AdvancedNavigator also has built in argument parsing for extracting arguments such as id's directly from the provided URI. In the path name, arguments are marked with enclosing parentheses `.../{argName}/...` and can be read from the args argument in the path builder function to be used for building the page stack.
+
+Example:
+
+| ✔️ Do | ❌ Don't |
+| --- | --- |
+| `'/items/{itemId}'` | `'/items/0x{itemId}'` |
+|  | `'items-{itemId}'` |
+
+Query parameters as in `/search?q=unicorn&res=50` will be extracted and passed on as well. However, path name arguments will take precidence in the event of a name collision.
+
+Example:
 
 ```dart
 AdvancedNavigator(
@@ -33,14 +57,19 @@ AdvancedNavigator(
     '/items': (_) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
     ],
+    // example: '/items/ac9f0e80'
     '/items/{itemId}': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
       CupertinoPage(key: ValueKey('item${args['itemId']}'), child: ViewItem(args['itemId']),
     ],
+    // example: '/search?q=unicorn&res=50'
+    '/search': (args) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+      CupertinoPage(key: ValueKey('search'), child: ViewSearch(args['q'], res: int.parse(args['res']))),
+    ],
   }
 );
 ```
-Query parameters as in `home/details?sort=desc` will be extracted and passed on as well. However, path name arguments will take precidence in the event of a name collision.
 
 Most use-cases will only need the `paths` argument. However, there is the option to specify an `onGeneratePath` and  `onUnknownPath` function for full customizability. These functions can work in tandem with `paths` and are used by the navigator as a fallback for requests `paths` is unable to handle.
 
@@ -50,6 +79,44 @@ AdvancedNavigator(
     // code here
   },
   onUnknownPath: (RouteInformation configuration) {
+    // fallback code here
+  }
+),
+```
+
+#### Pages
+
+For generative navigation, `AdvancedNavigator` also offers the `pages` argument. Instead of replacing the entire page stack, in this approach pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
+
+As in the `paths` argument, `pages` maps a unique string identifier to a builder function, however here for building a page instead of a path. Also, the string identifier is not required to comply with any format and can be chosen arbitrarily. Arguments are not contained in the name but are passed along as a separate parameter in the `pushNamed()` function. Calling `pushNamed()` will invoke the page builder function of the associated page name with the given arguments and add the returned page to the top of the page stack.
+
+Example:
+
+```dart
+AdvancedNavigator(
+  pages: {
+    'post': (args) => CupertinoPage(key: ValueKey('post${args['postId']}'), child: ViewPost(args['postId'])),
+    'profile': (args) => CupertinoPage(key: ValueKey('profile${args['userId']}'), child: ViewProfile(args['userId'])),
+  }
+);
+```
+
+> **Important:** For the navigator to be able to recognize whether a widget changed or not, it is curcial to assign a restorable key to your pages. Otherwise, the navigator will rebuild the entire page stack with new widgets for every navigation operation.
+
+#### Routes
+
+Routes work nearly identical to pages, however with the difference that the are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
+
+Often it makes more sense to use pages instead as it leaves the app with more fine grained control over the navigator's route stack. However, routes with strict links to the last page such as dialogs and drop-down menus do benefit from being pageless.
+
+Routes can be generated using the `onGenerateRoute` function and are added using `attach()` or `attachNamed()`.
+
+```dart
+AdvancedNavigator(
+  onGenerateRoute: (RouteSettings configuration) {
+    // code here
+  },
+  onUnknownRoute: (RouteSettings configuration) {
     // fallback code here
   }
 ),
@@ -70,9 +137,9 @@ The advanced navigator implements an imperative API for remotely manipulating th
 
 In practice, these functions can be invoked by calling them on an instance of `AdvancedNavigatorState` which can be obtained using `AdvancedNavigator.of(context)`, assuming `context` contains an instance of `AdvancedNavigator`.
 ```dart
-ListTile(
-  ...
-  onTap: () => AdvancedNavigator.of(context).openNamed('items/$itemId');
+TextButton(
+  child: ...,
+  onPressed: () => AdvancedNavigator.of(context).openNamed('items/$itemId');
 ),
 ```
 
@@ -116,7 +183,11 @@ AdvancedNavigator(
 
 ### 1. Persistent Side Drawer
 
+// TODO
+
 ### 2. Encapsulated Navigation
+
+// TODO
 
 ### 3. URL synching
 
