@@ -27,7 +27,7 @@ dependencies:
   cupertino_icons: ^1.0.1
 
   advanced_navigator:
-    path: '../'
+    path: '../../'
 
 dev_dependencies:
   flutter_test:
