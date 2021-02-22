@@ -105,7 +105,7 @@ AdvancedNavigator(
 
 #### Routes
 
-Routes work nearly identical to pages, however with the difference that the are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
+Routes work nearly identical to pages, however with the difference that they are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
 
 Often it makes more sense to use pages instead as it leaves the app with more fine grained control over the navigator's route stack. However, routes with strict links to the last page such as dialogs and drop-down menus do benefit from being pageless.
 
@@ -135,7 +135,10 @@ The advanced navigator implements an imperative API for remotely manipulating th
 | **attachNamed** | Generates route with onGenerateRoute and attaches it to top-most paged route *(= Navigator.pushNamed)*. |
 | **pop** | Pops top-most route from navigator, regardless of whether route is pageless or not. If the navigator only has one route in its stack, the pop request is forwarded to the nearest ancestor. |
 
+> *Note: Since `AdvancedNavigator` also builds a standard `Navigator` as its child, all navigation operations from the old imperative API such as `Navigator.popAndPushNamed(context, ...)` will continue to work with `AdvancedNavigator`.*
+
 In practice, these functions can be invoked by calling them on an instance of `AdvancedNavigatorState` which can be obtained using `AdvancedNavigator.of(context)`, assuming `context` contains an instance of `AdvancedNavigator`.
+
 ```dart
 TextButton(
   child: ...,
@@ -143,7 +146,15 @@ TextButton(
 ),
 ```
 
-*Note: Since `AdvancedNavigator` also builds a standard `Navigator` as its child, all navigation operations from the old imperative API such as `Navigator.popAndPushNamed(context, ...)` will continue to work with `AdvancedNavigator`.*
+Equally valid is this, more concise syntax where the context is passed directly to the navigation function:
+
+```dart
+TextButton(
+  child: ...,
+  onPressed: () => AdvancedNavigator.openNamed(context, 'items/$itemId');
+```
+
+The `of()` function also takes a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
 
 ### Nesting
 
