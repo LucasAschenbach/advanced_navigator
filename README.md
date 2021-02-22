@@ -4,7 +4,7 @@ This package contains a fully fetched implementation of the new [Navigator 2.0](
 
 **Table of Contents**
 * [Overview](https://github.com/LucasAschenbach/advanced_navigator#overview)
-  * [Paths, Pages & Routes](https://github.com/LucasAschenbach/advanced_navigator#paths)
+  * [Paths, Pages & Routes](https://github.com/LucasAschenbach/advanced_navigator#paths-pages--routes)
   * [Navigation API](https://github.com/LucasAschenbach/advanced_navigator#navigation-api)
   * [Nesting](https://github.com/LucasAschenbach/advanced_navigator#nesting)
 * [Use Cases](https://github.com/LucasAschenbach/advanced_navigator#use-cases)
