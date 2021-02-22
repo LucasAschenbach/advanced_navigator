@@ -84,6 +84,8 @@ AdvancedNavigator(
 ),
 ```
 
+> **Important:** For the navigator to be able to recognize whether a widget changed or not, it is curcial to assign a restorable key to your pages. Otherwise, the navigator will rebuild the entire page stack with new widgets for every navigation operation.
+
 #### Pages
 
 For generative navigation, `AdvancedNavigator` also offers the `pages` argument. Instead of replacing the entire page stack, in this approach pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
