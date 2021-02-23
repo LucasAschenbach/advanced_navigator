@@ -1,6 +1,6 @@
 # Advanced Navigator
 
-This package makes using the new [Navigator 2.0](https:/docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY) extremely simple while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
+This package makes using the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) extremely simple while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
 
 ## Usage
 
@@ -14,7 +14,7 @@ Every navigation operation which can be applied to `AdvancedNavigatior` falls in
 2. **Page Navigation:** Adds or removes page to or from top of page stack
 3. **Pageless Navigation:** Attaches route to top-most page in page stack
 
-> A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https:/docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY).
+> A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#).
 
 #### Paths
 
