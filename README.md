@@ -79,7 +79,11 @@ AdvancedNavigator(
 );
 ```
 
-**IMPORTANT:** Always be sure to **assign a restorable key to every page** to be added to the page stack. Otherwise, there will be issues with path navigations as the navigator won't be able to tell which pages have already been in the page stack and which need to be transitioned into viewport.
+---
+
+**IMPORTANT:** Always be sure to **assign a restorable key to every page** before to the page stack. Otherwise, there will be issues with path navigations as the navigator won't be able to tell which pages have already been in the page stack and which need to be transitioned into viewport.
+
+---
 
 #### Routes
 
@@ -193,7 +197,7 @@ With this setup the app will support the following navigation requests, both fro
 
 At the same time, navigation requests directed at the child navigator such as `openNamed('/stats')` will update the global URI to `'/myArticles/9420ad99c0ec/settings'` as well.
 
-Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulated components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
+Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulated components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor pages are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
 
 ## Examples
 
