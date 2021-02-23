@@ -141,7 +141,7 @@ Nesting is where `AdvancedNavigator` really shines. Not only does it configure i
 
 This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators. 
 
-In brief, when a navigator is unable to fully handle a navigation request, ie. it only contains the first segments of a requested path, it stores the remaining segments. Now, other navigators (usually descendants) can listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update the system navigator of the navigation.
+In brief, when a navigator is unable to fully handle a navigation request, i.e. its path names only match first segments of the requested path, it handles the request with the longest matched path and stores the remaining segments. Now, other navigators (usually descendants) can listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update the its parent or the system navigator of the navigation.
 
 Here is what that means in practice:
 
@@ -165,6 +165,7 @@ AdvancedNavigator(
 
 
 // inside AppTextEditor
+
 AdvancedNavigator(
   parent: AdvancedNavigator.of(context),
   paths: {
