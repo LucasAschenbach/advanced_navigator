@@ -133,7 +133,7 @@ TextButton(
 ),
 ```
 
-The `of()` function also takes a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
+The `of()` function also provides the option to specify a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
 
 ### Nesting
 
