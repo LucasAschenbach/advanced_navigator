@@ -185,13 +185,15 @@ AdvancedNavigator(
 
 With this setup the app will support the following navigation requests, both from inside the app through `openNamed()` or from an external source such as the web broswer url:
 
-* /
-* /myArticles
-* /myArticles/9420ad99c0ec
-* /myArticles/9420ad99c0ec/stats
-* /myArticles/9420ad99c0ec/settings
+* `'/'`
+* `'/myArticles'`
+* `'/myArticles/9420ad99c0ec'`
+* `'/myArticles/9420ad99c0ec/stats'`
+* `'/myArticles/9420ad99c0ec/settings'`
 
-At the same time, navigation requests directed at the child navigator such as `openNamed('stats')` will update the global URI as well.
+At the same time, navigation requests directed at the child navigator such as `openNamed('/stats')` will update the global URI to `'/myArticles/9420ad99c0ec/settings'` as well.
+
+Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulated components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
 
 ## Examples
 
