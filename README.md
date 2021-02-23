@@ -79,7 +79,7 @@ AdvancedNavigator(
 );
 ```
 
-> **Important:** Always be sure to **assign a restorable key to every page** before adding it to the page stack. Otherwise, there will be issues with *path navigations* as the navigator won't be able to tell which pages have already been in the page stack and which need to be transitioned into viewport.
+> **Important:** Always be sure to **assign a restorable key to every page** before adding it to the page stack. Otherwise, there will be issues with *path navigation* operations as the navigator won't be able to tell which pages have already been in the page stack before the request and which need to be transitioned into viewport.
 
 #### Routes
 
