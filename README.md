@@ -1,52 +1,30 @@
 # Advanced Navigator
 
-This package contains a fully fetched implementation of the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) as one easy-to-use widget: AdvancedNavigator. In contrast to the standard Navigator, it enables fully customizable page history manipulations from anywhere in the widget tree, automatically synchronizes the browser URL to navigation events, and communicates with other navigator widgets for intelligent nesting behaviours. At the same time, all endpoints of the old navigator API (i.e. push, pushNamed, popAndPushNamed, etc.) will continue to work when using AdvancedNavigator.
+This package makes using the new [Navigator 2.0](https:/docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY) extremely simple while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
 
-**Table of Contents**
-* [Overview](https://github.com/LucasAschenbach/advanced_navigator#overview)
-  * [Paths, Pages & Routes](https://github.com/LucasAschenbach/advanced_navigator#paths-pages--routes)
-  * [Navigation API](https://github.com/LucasAschenbach/advanced_navigator#navigation-api)
-  * [Nesting](https://github.com/LucasAschenbach/advanced_navigator#nesting)
-* [Use Cases](https://github.com/LucasAschenbach/advanced_navigator#use-cases)
-  * [1. Persistent Side Drawer](https://github.com/LucasAschenbach/advanced_navigator#1-persistent-side-drawer)
-  * [2. Encapsulated Navigation](https://github.com/LucasAschenbach/advanced_navigator#2-encapsulated-navigation)
-  * [3. URL synching](https://github.com/LucasAschenbach/advanced_navigator#3-url-synching)
+## Usage
 
----
+This package is build to handle both, simple navigations without unnecessary code overhead as well as very complex navigations which require web-URL synching across nested navigators, just to give an example. At its core is the `AdvancedNavigator` widget. It looks similar to the standard navigator but provides easy access to the declarative API and adds other features without requiring custom router delegates or route information providers.
 
-## Overview
+### Basic Navigation
 
-The advanced navigator widget is a wrapper for a router and navigator and makes extensive use of the newly added declarative navigator API. 
+Every navigation operation which can be applied to `AdvancedNavigatior` falls into one of three categories:
 
-### Paths, Pages & Routes
+1. **Path Navigation:** Replaces entire page stack with new list of pages
+2. **Page Navigation:** Adds or removes page to or from top of page stack
+3. **Pageless Navigation:** Attaches route to top-most page in page stack
+
+> A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https:/docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY).
 
 #### Paths
 
-A significant accomplishment of the new declarative API is that it allows for unrestricted page stack manipulation. The `AdvancedNavigator` widget provides a simple interface for controlling such page stack manipulations through the `paths` argument. It takes a map of unique string identifiers each associated with a path builder function whose return value will replace the current page history whenever `openNamed()` is called with the associated path name. 
+Paths are in most cases declared through the `paths` argument which provides a simple and clear interface for fully customizable page stack manipulations. It maps a set of URIs to path builder functions which will be invoked whenever `AdvancedNavigator.openNamed(context, <uri>)` with the associated URI is called. The returned path (list of pages) then replaces the navigators current page stack.
 
-AdvancedNavigator expects each requested path name to be in the standard [URI](https://tools.ietf.org/html/rfc2396) format and will parse it as such. Therefore, to take full advantage of this widget it is recommended to define path names using that format.
+> `AdvancedNavigator` expects each requested path name to be in the standard [URI](https://tools.ietf.org/html/rfc2396) format and will parse it as such. Therefore, to take full advantage of this widget it is recommended to design path names with that format in mind.
 
-Example:
-
-| ✔️ Do | ❌ Don't |
-| --- | --- |
-| `'/'` | `''` |
-| `'/movies'` | `'/movies/'` |
-| `'/settings/general'` | `'settings-general'` |
-| `'/recommendations?res=50'` | `'/recommendations/?res=50'` |
-
-AdvancedNavigator also has built in argument parsing for extracting arguments such as id's directly from the provided URI. In the path name, arguments are marked with enclosing parentheses `.../{argName}/...` and can be read from the args argument in the path builder function to be used for building the page stack.
-
-Example:
-
-| ✔️ Do | ❌ Don't |
-| --- | --- |
-| `'/items/{itemId}'` | `'/items/0x{itemId}'` |
-|  | `'items-{itemId}'` |
+There is built in argument parsing for extracting arguments such as id's directly from the provided URI. In the path name, arguments are marked with enclosing parentheses `.../{argName}/...` and can be read from the args argument in the path builder function to be used for building the page stack.
 
 Query parameters as in `/search?q=unicorn&res=50` will be extracted and passed on as well. However, path name arguments will take precidence in the event of a name collision.
-
-Example:
 
 ```dart
 AdvancedNavigator(
@@ -71,7 +49,7 @@ AdvancedNavigator(
 );
 ```
 
-Most use-cases will only need the `paths` argument. However, there is the option to specify an `onGeneratePath` and  `onUnknownPath` function for full customizability. These functions can work in tandem with `paths` and are used by the navigator as a fallback for requests `paths` is unable to handle.
+It is worth noting that most use-cases will only need the `paths` argument for *Path Navigation*. However, there is the option to specify an `onGeneratePath` and  `onUnknownPath` function for full customizability. These functions can work in tandem with `paths` and are used by the navigator as a fallback for requests `paths` is unable to handle.
 
 ```dart
 AdvancedNavigator(
@@ -84,13 +62,11 @@ AdvancedNavigator(
 ),
 ```
 
-> **Important:** For the navigator to be able to recognize whether a widget changed or not, it is curcial to assign a restorable key to your pages. Otherwise, the navigator will rebuild the entire page stack with new widgets for every navigation operation.
-
 #### Pages
 
-For generative navigation, `AdvancedNavigator` also offers the `pages` argument. Instead of replacing the entire page stack, in this approach pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
+*Page Navigation* is more generative and can be implemented using the `pages` argument. Instead of replacing the entire page stack, pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
 
-As in the `paths` argument, `pages` maps a unique string identifier to a builder function, however here for building a page instead of a path. Also, the string identifier is not required to comply with any format and can be chosen arbitrarily. Arguments are not contained in the name but are passed along as a separate parameter in the `pushNamed()` function. Calling `pushNamed()` will invoke the page builder function of the associated page name with the given arguments and add the returned page to the top of the page stack.
+`paths` defines a map of pages uniquely identified by a string page name. Also, the string identifier is not required to comply with any format and can be chosen arbitrarily. Arguments are not contained in the name but are passed along as a separate parameter in the `pushNamed()` function. Calling `pushNamed()` will invoke the page builder function of the associated page name with the given arguments and add the returned page to the top of the page stack.
 
 Example:
 
@@ -103,13 +79,13 @@ AdvancedNavigator(
 );
 ```
 
-> **Important:** For the navigator to be able to recognize whether a widget changed or not, it is curcial to assign a restorable key to your pages. Otherwise, the navigator will rebuild the entire page stack with new widgets for every navigation operation.
+**IMPORTANT:** Always be sure to **assign a restorable key to every page** to be added to the page stack. Otherwise, there will be issues with path navigations as the navigator won't be able to tell which pages have already been in the page stack and which need to be transitioned into viewport.
 
 #### Routes
 
 Routes work nearly identical to pages, however with the difference that they are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
 
-Often it makes more sense to use pages instead as it leaves the app with more fine grained control over the navigator's route stack. However, routes with strict links to the last page such as dialogs and drop-down menus do benefit from being pageless.
+Often it makes more sense to use pages instead as it leaves the app with more fine grained control over the navigator's route stack. However, routes with strict links to the last page such as **dialogs and drop-down menus do benefit from being pageless**.
 
 Routes can be generated using the `onGenerateRoute` function and are added using `attach()` or `attachNamed()`.
 
@@ -120,11 +96,11 @@ AdvancedNavigator(
   },
   onUnknownRoute: (RouteSettings configuration) {
     // fallback code here
-  }
+  },
 ),
 ```
 
-### Navigation API
+#### API Overview
 
 The advanced navigator implements an imperative API for remotely manipulating the page stack from anywhere in the widget tree. This new API exposes the following endpoints:
 | Endpoint | Description |
@@ -135,16 +111,16 @@ The advanced navigator implements an imperative API for remotely manipulating th
 | **pushNamed** | Checks if provided page name has reference in `pages` argument and adds page to top of page stack. |
 | **attach** | Attaches provided pageless route to top-most paged route *(= Navigator.push)*. |
 | **attachNamed** | Generates route with onGenerateRoute and attaches it to top-most paged route *(= Navigator.pushNamed)*. |
-| **pop** | Pops top-most route from navigator, regardless of whether route is pageless or not. If the navigator only has one route in its stack, the pop request is forwarded to the nearest ancestor. |
+| **pop** | Pops top-most route from navigator, regardless of whether route is pageless or not. If the navigator only has one route in its stack, the pop request is automatically forwarded to the nearest ancestor. |
 
-> *Note: Since `AdvancedNavigator` also builds a standard `Navigator` as its child, all navigation operations from the old imperative API such as `Navigator.popAndPushNamed(context, ...)` will continue to work with `AdvancedNavigator`.*
+> Since `AdvancedNavigator` also builds a standard `Navigator` as its child, all navigation operations from the old imperative API such as `Navigator.popAndPushNamed(context, ...)` will continue to work with `AdvancedNavigator`.
 
 In practice, these functions can be invoked by calling them on an instance of `AdvancedNavigatorState` which can be obtained using `AdvancedNavigator.of(context)`, assuming `context` contains an instance of `AdvancedNavigator`.
 
 ```dart
 TextButton(
   child: ...,
-  onPressed: () => AdvancedNavigator.of(context).openNamed('items/$itemId');
+  onPressed: () => AdvancedNavigator.of(context).openNamed('items/$itemId'),
 ),
 ```
 
@@ -153,46 +129,71 @@ Equally valid is this, more concise syntax where the context is passed directly 
 ```dart
 TextButton(
   child: ...,
-  onPressed: () => AdvancedNavigator.openNamed(context, 'items/$itemId');
+  onPressed: () => AdvancedNavigator.openNamed(context, 'items/$itemId'),
+),
 ```
 
 The `of()` function also takes a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
 
 ### Nesting
 
-Advanced Navigator supports global URI navigation, even across nested navigators. This works by maintaining an active channel of communication between navigator to update each other on new navigation events.
+Nesting is where `AdvancedNavigator` really shines. Not only does it configure itself automatically based on whether there is an instance of `AdvancedNavigator` above itself in the widget tree. It also maintains an active channel of communication with its parent navigator throughout its lifetime.
 
-Since Flutter creates its element tree recursively, a navigator can only know about its ancestors but not about its descendants during build. Accordingly, upon build a navigator will take a parent navigator as an argument (usually `AdvancedNavigator.of(context)`) and attach a listener to its `currentNestedPath` variable. Advanced navigator checks whether there is another navigator above itself in the widget tree and configures itself accordingly.
+This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators. 
+
+In brief, when a navigator is unable to fully handle a navigation request, ie. it only contains the first segments of a requested path, it stores the remaining segments. Now, other navigators (usually descendants) can listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update the system navigator of the navigation.
+
+Here is what that means in practice:
 
 ```dart
 AdvancedNavigator(
   paths: {
-    '/': (_) => ...,
-    '/projects/{projectId}': (args) => [
-      ...,
-      EditorApp(
-        ...
-        // Provider for projectId:
+    '/': (_) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+    ],
+    '/myArticles': (_) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+      CupertinoPage(key: ValueKey('drafts'), child: ViewMyArticles()),
+    ],
+    '/myArticles/{articleId}': (args) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+      CupertinoPage(key: ValueKey('drafts'), child: ViewMyArticles()),
+      CupertinoPage(key: ValueKey('draft${args['draftId']}'), child: AppTextEditor(args['draftId'])),
+    ],
+  },
+),
 
-            AdvancedNavigator(
-              parent: AdvancedNavigator.of(context),
-              paths: {
-                '/': (_) => [Editor()],
-                '/settings': (_) => [
-                  Editor(),
-                  Settings(),
-                ],
-              },
-            ),
 
-        ...
-      ),
+// inside AppTextEditor
+AdvancedNavigator(
+  parent: AdvancedNavigator.of(context),
+  paths: {
+    '/': (_) => [
+      CupertinoPage(key: ValueKey('editor'), child: ViewTextEditor()),
+    ],
+    '/stats': (_) => [
+      CupertinoPage(key: ValueKey('editor'), child: ViewTextEditor()),
+      CupertinoPage(key: ValueKey('stats'), child: ViewTextEditorSettings()),
+    ],
+    '/settings': (_) => [
+      CupertinoPage(key: ValueKey('editor'), child: ViewTextEditor()),
+      CupertinoPage(key: ValueKey('settings'), child: ViewTextEditorSettings()),
     ],
   },
 ),
 ```
 
-## Use Cases
+With this setup the app will support the following navigation requests, both from inside the app through `openNamed()` or from an external source such as the web broswer url:
+
+* /
+* /myArticles
+* /myArticles/9420ad99c0ec
+* /myArticles/9420ad99c0ec/stats
+* /myArticles/9420ad99c0ec/settings
+
+At the same time, navigation requests directed at the child navigator such as `openNamed('stats')` will update the global URI as well.
+
+## Examples
 
 ### 1. Persistent Side Drawer
 
