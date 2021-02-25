@@ -25,7 +25,10 @@ class App extends StatelessWidget {
                 '/': (_) => [
                   CupertinoPage(key: ValueKey('home'), child: ViewHome()),
                 ],
-                'items/{itemId}': (args) => [
+                '/items': (_) => [
+                  CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+                ],
+                'items/{itemId}/...': (args) => [
                   CupertinoPage(key: ValueKey('home'), child: ViewHome()),
                   CupertinoPage(key: ValueKey('item${args['itemId']}'), child: AppItem(int.parse(args['itemId']))),
                 ],
