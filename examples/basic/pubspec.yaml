@@ -1,5 +1,5 @@
-name: example
-description: Example Project implementing the AdvancedNavigator package.
+name: basic
+description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -23,16 +23,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.1
+  cupertino_icons: ^1.0.2
 
   advanced_navigator:
     path: '../../'
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  integration_test:
     sdk: flutter
 
 # For information on the generic Dart part of this file, see the
