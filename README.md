@@ -1,10 +1,10 @@
 # Advanced Navigator
 
-This package makes using the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) extremely simple while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
+This package aims at making the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) easy to implement without any boilerplate code while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
 
 ## Usage
 
-This package is build to handle both, simple navigations without unnecessary code overhead as well as very complex navigations which require web-URL synching across nested navigators, just to give an example. At its core is the `AdvancedNavigator` widget. It looks similar to the standard navigator but provides easy access to the declarative API and adds other features without requiring custom router delegates or route information providers.
+This package is build to handle both, simple navigations without unnecessary code overhead as well as very complex navigations which require web-URL synching across nested navigators. At its core is the `AdvancedNavigator` widget. It looks similar to the standard navigator but provides easy access to the declarative API and adds other features without requiring custom router delegates or route information providers.
 
 ### Basic Navigation
 
@@ -139,7 +139,7 @@ The `of()` function also provides the option to specify a `skip` parameter which
 
 Nesting is where `AdvancedNavigator` really shines. Not only does it configure itself automatically based on whether there is an instance of `AdvancedNavigator` above itself in the widget tree. It also maintains an active channel of communication with its parent navigator throughout its lifetime. This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators.
 
-To implement nested navigation, path names building nested navigators must be marked as nested by appending `/...` to the path name. That way, they are matched as a prefix against incoming path name requests and only need to match the first `n` segments and not the entire path name to the last segment. When then a navigator is unable to fully handle a navigation request itself, i.e. the requested path name matched a nested path name as longest name, it handles the request with the nested path and stores the remaining unused path segments. Now, other navigators (usually descendants) can set that navigator as their `parent` and listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update its parent or the system navigator of the navigation.
+To implement nested navigation, path names building nested navigators must be marked as nested by appending `/...` to the path name. That way, they are matched as a prefix against incoming path name requests and only need to match the first `n` segments and not the entire path name to the last segment. When then a navigator is unable to fully handle a navigation request, i.e. the requested path name matched a nested path name as longest name, it handles the request with the nested path and stores the remaining unused path segments. Now, other navigators (usually descendants) can set that navigator as their `parent` and listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update its parent or the system navigator of the navigation.
 
 Here is what that means in practice:
 
@@ -192,7 +192,7 @@ With this setup the app will support the following navigation requests, both fro
 
 At the same time, navigation requests directed at the child navigator such as `openNamed('/stats')` will update the global URI as well, in this case to `'/myArticles/9420ad99c0ec/stats'`.
 
-Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulated components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor pages are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
+Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulating components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor pages are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
 
 ## Examples
 
