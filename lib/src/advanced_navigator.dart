@@ -143,6 +143,14 @@ class AdvancedNavigator extends StatefulWidget {
   /// ```
   static RegExp argPattern = RegExp(r'^{([^/]*)}$');
 
+  /// Pattern for detecting whether a path name can have nested path names
+  /// appended to it.
+  /// 
+  /// This pattern is matched against the entire path name.
+  /// 
+  /// The default nest pattern will match any path name ending with: `'/...'`.
+  static RegExp nestPattern = RegExp(r'/...$');
+
   /// Function for parsing a string path to a [PathGroup] object.
   /// 
   /// This function is called by the [didUpdateWidget] function from the
@@ -168,9 +176,12 @@ class AdvancedNavigator extends StatefulWidget {
   static PathGroup parsePath(String path) {
     var args = <int, String>{};
     var uri = Uri.parse(path);
-    var strPattern = '';
-    uri.pathSegments.asMap().forEach((index, pathSegment) {
-      // check if segment is dynamic
+    var pathSegments = uri.pathSegments;
+    var isNested = nestPattern.firstMatch(uri.path) != null;
+    if (isNested) pathSegments.removeLast();
+    var strPattern = '^';
+    pathSegments.asMap().forEach((index, pathSegment) {
+      // check if segment is argument
       var argName = argPattern.firstMatch(pathSegment)?.group(1);
       if (argName == null) {
         strPattern += RegExp.escape('/$pathSegment');
@@ -180,8 +191,9 @@ class AdvancedNavigator extends StatefulWidget {
       }
     });
     if (strPattern.isEmpty) strPattern = '/';
+    if (!isNested) strPattern += r'$';
     var pattern = RegExp(strPattern);
-    return PathGroup(pattern, length: uri.pathSegments.length, args: args);
+    return PathGroup(pattern, length: pathSegments.length, args: args);
   }
 
   /// The router delegate from the closest instance of this class that encloses
@@ -672,7 +684,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       String internalPath;
       String nestedPath;
       paths.keys.forEach((iterationPathGroup) {
-        var match = iterationPathGroup.pattern.matchAsPrefix(uri.path);
+        var match = iterationPathGroup.pattern.firstMatch(uri.path);
         if (match != null) {
           // longest matched path takes precidence
           if (iterationPathGroup.length > (pathGroup?.length ?? -1)) {
