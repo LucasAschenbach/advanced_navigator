@@ -176,10 +176,10 @@ class AdvancedNavigator extends StatefulWidget {
   static PathGroup parsePath(String path) {
     var args = <int, String>{};
     var uri = Uri.parse(path);
-    var pathSegments = uri.pathSegments;
+    var pathSegments = List<String>.from(uri.pathSegments);
     var isNested = nestPattern.firstMatch(uri.path) != null;
     if (isNested) pathSegments.removeLast();
-    var strPattern = '^';
+    var strPattern = '';
     pathSegments.asMap().forEach((index, pathSegment) {
       // check if segment is argument
       var argName = argPattern.firstMatch(pathSegment)?.group(1);
@@ -191,6 +191,7 @@ class AdvancedNavigator extends StatefulWidget {
       }
     });
     if (strPattern.isEmpty) strPattern = '/';
+    strPattern = '^' + strPattern;
     if (!isNested) strPattern += r'$';
     var pattern = RegExp(strPattern);
     return PathGroup(pattern, length: pathSegments.length, args: args);
