@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 part 'route_information_provider.dart';
 
 /// A function for building a page stack from route information
-typedef PathFactory = List<Page> Function(RouteInformation);
+typedef PathFactory = RouterConfiguration Function(RouteInformation);
 
 /// A widget that manages a set of child widgets with a stack discipline.
 /// 
@@ -526,6 +526,19 @@ class PathGroup {
   final Map<int, String> args;
 }
 
+@immutable
+class RouterConfiguration {
+  const RouterConfiguration({
+    @required this.pages,
+    this.internalPath,
+    this.nestedPath,
+  }) : assert(pages != null);
+
+  final List<Page> pages;
+  final RouteInformation internalPath;
+  final RouteInformation nestedPath;
+}
+
 class DefaultRouteInformationParser
     extends RouteInformationParser<RouteInformation> {
   const DefaultRouteInformationParser();
@@ -734,7 +747,10 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
         }
         return true;
       }());
-      changedPages = onGeneratePath(configuration);
+      var routerConfiguration = onGeneratePath(configuration);
+      changedPages = routerConfiguration.pages;
+      currentInternalPath = routerConfiguration.internalPath;
+      currentNestedPath = routerConfiguration.nestedPath;
       if (changedPages == null) {
         assert(() {
           if (onUnknownPath == null) {
@@ -749,7 +765,10 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
           }
           return true;
         }());
-        changedPages = onUnknownPath(configuration);
+        routerConfiguration = onUnknownPath(configuration);
+        changedPages = routerConfiguration.pages;
+        currentInternalPath = routerConfiguration.internalPath;
+        currentNestedPath = routerConfiguration.nestedPath;
         assert(() {
           if (changedPages == null) {
             throw FlutterError.fromParts(<DiagnosticsNode>[
