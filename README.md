@@ -137,7 +137,7 @@ The `of()` function also provides the option to specify a `skip` parameter which
 
 ### Nesting
 
-Nesting is where `AdvancedNavigator` really shines. Not only does it configure itself automatically based on whether there is an instance of `AdvancedNavigator` above itself in the widget tree. It also maintains an active channel of communication with its parent navigator throughout its lifetime. This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators.
+`AdvancedNavigator` is built to be nested. It configures itself automatically based on whether there is an instance of `AdvancedNavigator` above itself in the widget tree and also maintains an active channel of communication with its parent navigator throughout its lifetime. This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators.
 
 To implement nested navigation, path names building nested navigators must be marked as nested by appending `/...` to the path name. That way, they are matched as a prefix against incoming path name requests and only need to match the first `n` segments and not the entire path name to the last segment. When then a navigator is unable to fully handle a navigation request, i.e. the requested path name matched a nested path name as longest name, it handles the request with the nested path and stores the remaining unused path segments. Now, other navigators (usually descendants) can set that navigator as their `parent` and listen to changes on that path remainder and open that path. Vice verca, when a navigation operation occurs in a navigatior which has a parent, that navigator updates the parent's *nested path* so it can then update its parent or the system navigator of the navigation.
 
