@@ -2,7 +2,7 @@
 * Nested navigator communication:
   * Navigation request forwarding to nested child navigators
   * Notify parent navigator of navigation activity
-* Fix: url not syncing without WidgetsApp
+* Fix: URL not syncing without WidgetsApp
 
 # 0.0.1
 * Navigation API (openNamed, pushNamed, ...)
