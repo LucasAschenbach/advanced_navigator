@@ -1,8 +1,7 @@
 name: advanced_navigator
-description: A Flutter Navigator which combines the capabilities of the new Declarative and the existing Imperative Navigator API into one easy-to-use widget.
+description: Flutter's Navigator 2.0 as one easy-to-use widget with full page history manipulation operations, simplified pop event delegation and powerful nesting. 
 version: 0.0.1
-author: Lucas Aschenbach
-homepage:
+repository: https://github.com/LucasAschenbach/advanced_navigator
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
