@@ -243,3 +243,9 @@ AdvancedNavigator(
   }
 ),
 ```
+
+## About
+
+Initially, I only created this package to easily port all of my Flutter projects to the new *Navigator 2.0* without having to rewrite the same code over and over again and spontaneously decided to make it open scource. Consequently, there may be a few use cases which this library is not yet properly optimized for. In that case, feel free to create an issue with a feature request.
+
+**Issues and PRs are welcome.**
