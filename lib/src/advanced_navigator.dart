@@ -393,7 +393,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
   }
 
   void removeChild(AdvancedNavigatorState navigator) {
-    if (_children.remove(navigator)) {
+    _children.remove(navigator);
+    if (_children.isEmpty) {
       updatedSubtree(null);
     }
   }
