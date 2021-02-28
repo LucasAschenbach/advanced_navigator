@@ -480,9 +480,10 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
     // persist state on rebuild: == null
     if (_informationProvider == null) {
       var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
+      var initialLocation = widget.initialLocation
+          ?? AdvancedNavigator.defaultPathName;
       var initialRouteInformation = RouteInformation(
-        location: widget.initialLocation
-            ?? AdvancedNavigator.defaultPathName,
+        location: initialLocation,
       );
       if (widget.parent != null) {
         // navigator is nested with parent
@@ -497,6 +498,12 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
         );
       } else {
         // navigator is at root
+        initialLocation = WidgetsBinding.instance.window.defaultRouteName != AdvancedNavigator.defaultPathName
+            ? WidgetsBinding.instance.window.defaultRouteName
+            : initialLocation;
+        initialRouteInformation = RouteInformation(
+          location: initialLocation,
+        );
         _informationProvider = PlatformRouteInformationProvider(
           initialRouteInformation: initialRouteInformation,
         );
