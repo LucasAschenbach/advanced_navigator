@@ -5,7 +5,9 @@
 * Fix: URL not syncing without WidgetsApp
 
 # 0.0.1
-* Navigation API (openNamed, pushNamed, ...)
-* Custom page stack manipulation
-* Argument parsing from path name
-* URL syncing for path navigation
+* Compact declaration syntax with predefined paths and pages
+* Automatic parameter parsing from URI
+* Declaratively set navigator page stack with `open()` and `openNamed()`
+* Sync current path with platform (e.g. browser URL)
+* Push pages to top of page stack
+* Attach pageless routes to top page
