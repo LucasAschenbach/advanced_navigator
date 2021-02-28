@@ -151,12 +151,12 @@ AdvancedNavigator(
     ],
     '/myArticles': (_) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('drafts'), child: ViewMyArticles()),
+      CupertinoPage(key: ValueKey('myArticles'), child: ViewMyArticles()),
     ],
     '/myArticles/{articleId}/...': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('drafts'), child: ViewMyArticles()),
-      CupertinoPage(key: ValueKey('draft${args['draftId']}'), child: AppTextEditor(args['draftId'])),
+      CupertinoPage(key: ValueKey('myArticles'), child: ViewMyArticles()),
+      CupertinoPage(key: ValueKey('article${args['articleId']}'), child: AppTextEditor(args['articleId'])),
     ],
   },
 ),
