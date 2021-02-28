@@ -103,6 +103,7 @@ AdvancedNavigator(
 #### API Overview
 
 The advanced navigator implements an imperative API for remotely manipulating the page stack from anywhere in the widget tree. This new API exposes the following endpoints:
+
 | Endpoint | Description |
 | --- | --- |
 | **open** | Replaces current page stack with provided page stack |
@@ -230,17 +231,6 @@ Paths are opened with the `open()` or `openNamed()` functions and can be accesse
 ListTile(
   ...
   onPressed: () => AdvancedNavigator.openNamed(context, '/items/$itemId');
-),
-```
-For full customization, AdvancedNavigator can specify an `onGeneratePath` and `onUnknownPath` function for building a path from the raw route information. The generator functions work in tandem with the `paths` and, if specified, assume a fallback role.
-```dart
-AdvancedNavigator(
-  onGeneratePath: (configuration) {
-    // code here
-  },
-  onUnknownPath: (configuration) {
-    // fallback code here
-  }
 ),
 ```
 
