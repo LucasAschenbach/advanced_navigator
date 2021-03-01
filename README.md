@@ -1,7 +1,14 @@
-<p align="center">
-<a href="https://pub.dev/packages/advanced_navigator"><img src="https://img.shields.io/pub/v/advanced_navigator.svg" alt="pub"></a>
-<a href="https://github.com/LucasAschenbach/advanced_navigator/tree/main/LICENSE"><img src="https://img.shields.io/github/license/LucasAschenbach/advanced_navigator" alt="License"></a>
-</p>
+<div>
+  <h1>
+    Advanced Navigator
+    <a href="https://pub.dartlang.org/packages/advanced_navigator">
+      <img src="https://img.shields.io/pub/v/advanced_navigator.svg" alt="pub package">
+    </a>
+    <a href="https://github.com/LucasAschenbach/advanced_navigator/tree/main/LICENSE">
+      <img src="https://img.shields.io/github/license/LucasAschenbach/advanced_navigator" alt="license">
+    </a>
+  </h1>
+</div>
 
 This package aims at making the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) easy to implement without any boilerplate code while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
 - interface very familiar; similar to old navigator api
