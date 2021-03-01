@@ -1,12 +1,112 @@
-# Advanced Navigator
+<p align="center">
+<a href="https://pub.dev/packages/advanced_navigator"><img src="https://img.shields.io/pub/v/advanced_navigator.svg" alt="pub"></a>
+<a href="https://github.com/LucasAschenbach/advanced_navigator/tree/main/LICENSE"><img src="https://img.shields.io/github/license/LucasAschenbach/advanced_navigator" alt="License"></a>
+</p>
 
 This package aims at making the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) easy to implement without any boilerplate code while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
+- interface very familiar; similar to old navigator api
+- links
 
-## Usage
+---
+
+- [Quick Start](#quick-start)
+- [Examples](#examples)
+  - [URL syncing](#url-syncing)
+  - [Persistent Side Drawer](#persistent-side-drawer)
+  - [Encapsulated Navigation](#encapsulated-navigation)
+- [Documentation](#documentation)
+  - [Basic Navigation](#basic-navigation)
+    - [Paths](#paths)
+    - [Pages](#pages)
+    - [Routes](#routes)
+    - [API Overview](#api-overview)
+  - [Nesting](#nesting)
+- [About](#about)
+
+# Quick Start
+
+To get started with `AdvancedNavigator`, create a `MaterialApp`/`CupertinoApp` and return `AdvancedNavigator` from the builder function:
+
+```dart
+MaterialApp(
+  builder: (context, _) => AdvancedNavigator(
+    ...
+  ),
+);
+```
+
+In the next step, create a map with your desired URIs for your app:
+
+```dart
+AdvancedNavigator(
+  paths: {
+    '/': (_) => [
+      MaterialPage(key: ValueKey('home'), child: ViewHome()),
+    ],
+    '/followers': (_) => [
+      MaterialPage(key: ValueKey('home'), child: ViewHome()),
+      MaterialPage(key: ValueKey('followers'), child: ViewFollowers()),
+    ],
+    '/followers/{userId}': (args) => [
+      MaterialPage(key: ValueKey('home'), child: ViewHome()),
+      MaterialPage(key: ValueKey('followers'), child: ViewFollowers()),
+      MaterialPage(key: ValueKey('profile${args['userId']}'), child: ViewProfile(args['userId'])),
+    ],
+  },
+)
+```
+
+Now, you can open these paths from anywhere in your app with `AdvancedNavigator.openNamed(context, <uri>)`. ([see Paths Section](#paths))
+
+Similarly, you can define `pages` which can be pushed to and popped from the top of the navigators page stack. ([see Pages Section](#pages))
+
+# Examples
+
+## URL syncing
+
+<img src="https://raw.githubusercontent.com/LucasAschenbach/advanced_navigator/main/assets/example_preview.gif" heigh="500em">
+
+In this example, the navigators page stack will always stay in sync with the browsers url. The following snippet is all you need for implementing the above navigation logic.
+
+```dart
+AdvancedNavigator(
+  paths: {
+    '/': (_) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+    ],
+    '/items': (_) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+    ],
+    '/items/{itemId}': (args) => [
+      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+      CupertinoPage(key: ValueKey('item${args['itemId']}'), child: ViewItem(int.parse(args['itemId']))),
+    ],
+  },
+);
+```
+
+This is how the navigation is performed:
+
+```dart
+ListTile(
+  ...
+  onPressed: () => AdvancedNavigator.openNamed(context, '/items/$itemId');
+),
+```
+
+## Persistent Side Drawer
+
+// TODO
+
+## Encapsulated Navigation
+
+// TODO ([view code](https://pub.dev/packages/advanced_navigator/example))
+
+# Documentation
 
 This package is build to handle both, simple navigations without unnecessary code overhead as well as very complex navigations which require web-URL synching across nested navigators. At its core is the `AdvancedNavigator` widget. It looks similar to the standard navigator but provides easy access to the declarative API and adds other features without requiring custom router delegates or route information providers.
 
-### Basic Navigation
+## Basic Navigation
 
 Every navigation operation which can be applied to `AdvancedNavigatior` falls into one of three categories:
 
@@ -16,7 +116,7 @@ Every navigation operation which can be applied to `AdvancedNavigatior` falls in
 
 > A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#).
 
-#### Paths
+### Paths
 
 Paths are in most cases declared through the `paths` argument which provides a simple and clear interface for fully customizable page stack manipulations. It maps a set of URIs to path builder functions which will be invoked whenever `AdvancedNavigator.openNamed(context, <uri>)` with the associated URI is called. The returned path (list of pages) then replaces the navigators current page stack.
 
@@ -62,7 +162,7 @@ AdvancedNavigator(
 ),
 ```
 
-#### Pages
+### Pages
 
 *Page Navigation* is more generative and can be implemented using the `pages` argument. Instead of replacing the entire page stack, pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
 
@@ -81,7 +181,7 @@ AdvancedNavigator(
 
 > **Important:** Always be sure to **assign a restorable key to every page** before adding it to the page stack. Otherwise, there will be issues with *path navigation* operations as the navigator won't be able to tell whether a page has already been in the page stack before the request was made or not.
 
-#### Routes
+### Routes
 
 Routes work nearly identical to pages, however with the difference that they are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
 
@@ -100,7 +200,7 @@ AdvancedNavigator(
 ),
 ```
 
-#### API Overview
+### API Overview
 
 The advanced navigator implements an imperative API for remotely manipulating the page stack from anywhere in the widget tree. This new API exposes the following endpoints:
 
@@ -136,7 +236,7 @@ TextButton(
 
 The `of()` function also provides the option to specify a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
 
-### Nesting
+## Nesting
 
 `AdvancedNavigator` is built to be nested. It configures itself automatically based on whether there is an instance of `AdvancedNavigator` above itself in the widget tree and also maintains an active channel of communication with its parent navigator throughout its lifetime. This allows `AdvancedNavigator` to support global URI navigation, even across nested navigators.
 
@@ -173,11 +273,11 @@ AdvancedNavigator(
     ],
     '/stats': (_) => [
       CupertinoPage(key: ValueKey('editor'), child: ViewTextEditor()),
-      CupertinoPage(key: ValueKey('stats'), child: ViewTextEditorSettings()),
+      CupertinoPage(key: ValueKey('stats'), child: ViewArticleStats()),
     ],
     '/settings': (_) => [
       CupertinoPage(key: ValueKey('editor'), child: ViewTextEditor()),
-      CupertinoPage(key: ValueKey('settings'), child: ViewTextEditorSettings()),
+      CupertinoPage(key: ValueKey('settings'), child: ViewArticleSettings()),
     ],
   },
 ),
@@ -195,47 +295,8 @@ At the same time, navigation requests directed at the child navigator such as `o
 
 Nesting is extremely useful, not just for dealing with presistent UI components but also for capsulating components of an app. Given the example above, `AppTextEditor` can now be entirely separate from the rest of the app. The text editor pages are in a separate hirarchical layer which means all the presentation logic (e.g. BLoCs) can now behave as if there was only one article.
 
-## Examples
+# About
 
-### 1. Persistent Side Drawer
-
-// TODO
-
-### 2. Encapsulated Navigation
-
-// TODO
-
-### 3. URL synching
-
-<img src="https://raw.githubusercontent.com/LucasAschenbach/advanced_navigator/main/assets/example_preview.gif" heigh="500em">
-
-The AdvancedNavigator widget takes a `paths` argument for creating a set of predefined paths. Arguments are automatically parsed from the URI.
-```dart
-AdvancedNavigator(
-  paths: {
-    '/': (_) => [
-      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-    ],
-    '/items': (_) => [
-      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-    ],
-    '/items/{itemId}': (args) => [
-      CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('item${args['itemId']}'), child: ViewItem(int.parse(args['itemId']))),
-    ],
-  },
-);
-```
-Paths are opened with the `open()` or `openNamed()` functions and can be accessed just like push and pop from anywhere in the widget tree below the AdvancedNavigator widget.
-```dart
-ListTile(
-  ...
-  onPressed: () => AdvancedNavigator.openNamed(context, '/items/$itemId');
-),
-```
-
-## About
-
-Initially, I only created this package to easily port all of my Flutter projects to the new *Navigator 2.0* without having to rewrite the same code over and over again and only spontaneously decided to make it open scource. Consequently, there may be a few use cases which this library is not yet properly optimized for. In that case, feel free to create an issue with a feature request.
+Initially, I only created this package to easily port all of my Flutter projects to the new *Navigator 2.0* without having to rewrite the same code over and over again and only spontaneously decided to make it open source. Consequently, there may be a few use cases which this library is not yet properly optimized for. In that case, feel free to create an issue with a feature request.
 
 **Issues and PRs are welcome.**
