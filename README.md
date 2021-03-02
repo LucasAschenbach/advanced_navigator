@@ -10,9 +10,7 @@
   </h1>
 </div>
 
-This package aims at making the new [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) easy to implement without any boilerplate code while offering a wide array of advanced functionalities and customizations for difficult navigation logic.
-- interface very familiar; similar to old navigator api
-- links
+This package aims at bringing the powerful capabilities of [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) to any Flutter app as one easy-to-use widget. The focus was to keep this package simple and familiar to people used to the standard navigator API while at the same time providing even low level customizability for very difficult and unusual navigation logic.
 
 ---
 
@@ -65,7 +63,7 @@ AdvancedNavigator(
 
 Now, you can open these paths from anywhere in your app with `AdvancedNavigator.openNamed(context, <uri>)`. ([see Paths Section](#paths))
 
-Similarly, you can define `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` or `AdvancedNavigator.pop(context)`. ([see Pages Section](#pages))
+Similarly, you can define named `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` or `AdvancedNavigator.pop(context)`. ([see Pages Section](#pages))
 
 # Examples
 
