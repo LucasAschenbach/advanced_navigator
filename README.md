@@ -20,11 +20,11 @@ This package aims at bringing the powerful capabilities of [Navigator 2.0](https
   - [Persistent Side Drawer](#persistent-side-drawer)
   - [Encapsulated Navigation](#encapsulated-navigation)
 - [Documentation](#documentation)
-  - [Basic Navigation](#basic-navigation)
-    - [Paths](#paths)
-    - [Pages](#pages)
-    - [Routes](#routes)
-    - [API Overview](#api-overview)
+  - [Overview](#overview)
+  - [Paths](#paths)
+  - [Pages](#pages)
+  - [Routes](#routes)
+  - [Navigation API](#navigation-api)
   - [Nesting](#nesting)
 - [About](#about)
 
@@ -111,7 +111,7 @@ ListTile(
 
 This package is build to handle both, simple navigations without unnecessary code overhead as well as very complex navigations which require web-URL synching across nested navigators. At its core is the `AdvancedNavigator` widget. It looks similar to the standard navigator but provides easy access to the declarative API and adds other features without requiring custom router delegates or route information providers.
 
-## Basic Navigation
+## Overview
 
 Every navigation operation which can be applied to `AdvancedNavigatior` falls into one of three categories:
 
@@ -121,7 +121,7 @@ Every navigation operation which can be applied to `AdvancedNavigatior` falls in
 
 > A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#).
 
-### Paths
+## Paths
 
 Paths are in most cases declared through the `paths` argument which provides a simple and clear interface for fully customizable page stack manipulations. It maps a set of URIs to path builder functions which will be invoked whenever `AdvancedNavigator.openNamed(context, <uri>)` with the associated URI is called. The returned path (list of pages) then replaces the navigators current page stack.
 
@@ -167,7 +167,7 @@ AdvancedNavigator(
 ),
 ```
 
-### Pages
+## Pages
 
 *Page Navigation* is more generative and can be implemented using the `pages` argument. Instead of replacing the entire page stack, pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
 
@@ -186,7 +186,7 @@ AdvancedNavigator(
 
 > **Important:** Always be sure to **assign a restorable key to every page** before adding it to the page stack. Otherwise, there will be issues with *path navigation* operations as the navigator won't be able to tell whether a page has already been in the page stack before the request was made or not.
 
-### Routes
+## Routes
 
 Routes work nearly identical to pages, however with the difference that they are added to the navigator as a pageless route. Since they have not been inflated from a page, there is no page to be added to the page stack. Instead, they are attached to the current top-most page. Consequently, whenever that page is moved around the page stack or removed, so will this route.
 
@@ -205,7 +205,7 @@ AdvancedNavigator(
 ),
 ```
 
-### API Overview
+## Navigation API
 
 The advanced navigator implements an imperative API for remotely manipulating the page stack from anywhere in the widget tree. This new API exposes the following endpoints:
 
