@@ -15,7 +15,7 @@ class RouteInformationObservable {
   List<RouteInformationObserver> _observers = [];
 
   RouteInformation _observedRouteInformation;
-  get observedRouteInformation => _observedRouteInformation;
+  RouteInformation get observedRouteInformation => _observedRouteInformation;
   set observedRouteInformation(RouteInformation value) {
     if (_observedRouteInformation == value) {
       return;

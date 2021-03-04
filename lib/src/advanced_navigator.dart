@@ -224,7 +224,7 @@ class AdvancedNavigator extends StatefulWidget {
     bool rootNavigator = false,
     int skip = 0,
   }) {
-    AdvancedNavigatorState navigator = AdvancedNavigator.maybeOf(
+    var navigator = AdvancedNavigator.maybeOf(
       context,
       rootNavigator: rootNavigator,
       skip: skip,
@@ -284,7 +284,7 @@ class AdvancedNavigator extends StatefulWidget {
       context.visitAncestorElements((element) {
         if (element is StatefulElement && element.state is AdvancedNavigatorState) {
           if (skip <= 0) {
-            navigator = element.state;
+            navigator = element.state as AdvancedNavigatorState;
             return false;
           }
           skip--;
@@ -564,19 +564,19 @@ class DefaultRouteInformationParser
 class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
   DefaultRouterDelegate({
-    this.context,
-    this.onNestedPathUpdate,
-    this.pages,
-    this.paths,
-    this.onGeneratePath,
-    this.onUnknownPath,
-    this.onPopPage,
-    this.onGenerateRoute,
-    this.onUnknownRoute,
-    this.transitionDelegate,
-    this.reportsRouteUpdateToEngine,
-    this.observers,
-    this.restorationScopeId,
+    @required this.context,
+    @required this.onNestedPathUpdate,
+    @required this.pages,
+    @required this.paths,
+    @required this.onGeneratePath,
+    @required this.onUnknownPath,
+    @required this.onPopPage,
+    @required this.onGenerateRoute,
+    @required this.onUnknownRoute,
+    @required this.transitionDelegate,
+    @required this.reportsRouteUpdateToEngine,
+    @required this.observers,
+    @required this.restorationScopeId,
   }) : assert(context != null),
        assert(pages != null),
        assert(paths != null),
@@ -624,16 +624,18 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   Future<T> push<T extends Object>(Page<T> page) async {
     _pages.add(page);
     notifyListeners();
+    return null;
   }
 
   /// TODO: Return T from page route
   /// 
   /// Pushes page with given name to top of navigator page stack and inflates it.
   @optionalTypeArgs
-  Future<T> pushNamed<T extends Object>(String name, { Map<String, dynamic> arguments = const {} }) async {
+  Future<T> pushNamed<T extends Object>(String name, { Map<String, dynamic> arguments = const <String, dynamic>{} }) async {
     var page = pages[name](arguments);
     _pages.add(page);
     notifyListeners();
+    return null;
   }
 
   /// Adds pageless route to top of navigator route stack.
@@ -682,7 +684,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
 
   @override
   RouteInformation get currentConfiguration {
-    String rawPath = _currentInternalPath.location +
+    var rawPath = _currentInternalPath.location +
         (_currentNestedPath?.location ?? '');
     return RouteInformation(
       location: _cleanPath(rawPath),
@@ -724,7 +726,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       });
       // parse args
       if (pathGroup != null) {
-        Map<String, String> args = {};
+        var args = <String, String>{};
         args.addAll(uri.queryParameters);
         args.addAll(pathGroup.args.map((pos, argName) => MapEntry(
           argName, uri.pathSegments[pos]
