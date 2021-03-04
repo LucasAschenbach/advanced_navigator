@@ -63,7 +63,7 @@ AdvancedNavigator(
 
 Now, you can open these paths from anywhere in your app with `AdvancedNavigator.openNamed(context, <uri>)`. ([see Paths Section](#paths))
 
-Similarly, you can define named `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` or `AdvancedNavigator.pop(context)`. ([see Pages Section](#pages))
+Similarly, you can define named `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` and `AdvancedNavigator.pop(context)` respectively. ([see Pages Section](#pages))
 
 # Examples
 
