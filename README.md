@@ -69,9 +69,11 @@ Similarly, you can define named `pages` which can be pushed to and popped from t
 
 ## URL syncing
 
+In this example, the navigators page stack will always stay in sync with the browsers url.
+
 <img src="https://raw.githubusercontent.com/LucasAschenbach/advanced_navigator/main/assets/example_preview.gif" heigh="500em">
 
-In this example, the navigators page stack will always stay in sync with the browsers url. The following snippet is all you need for implementing the above navigation logic.
+The following snippet is all you need for implementing the above navigation logic.
 
 ```dart
 AdvancedNavigator(
@@ -115,11 +117,13 @@ This package is build to handle both, simple navigations without unnecessary cod
 
 Every navigation operation which can be applied to `AdvancedNavigatior` falls into one of three categories:
 
-1. **Path Navigation:** Replaces entire page stack with new list of pages
-2. **Page Navigation:** Adds or removes page to or from top of page stack
-3. **Pageless Navigation:** Attaches route to top-most page in page stack
+1. **[Path Navigation](#paths):** Replaces entire page stack with new list of pages
+2. **[Page Navigation](#pages):** Adds or removes page to or from top of page stack
+3. **[Pageless Navigation](#routes):** Attaches route to top-most page in page stack
 
 > A page is a blueprint for building a route. For more information, please go to the Navigator 2.0 introduction [here](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#).
+
+Furthermore, a *path navigations* operation performed at a given navigator can also update the navigation state of all navigators nested inside it. This makes for a very useful pattern as it allows an app to be split into multiple loosely connected modules, each with their own navigator. When put together, the navigators will communicate with each other to function as one. ([see Nesting](#nesting))
 
 ## Paths
 
