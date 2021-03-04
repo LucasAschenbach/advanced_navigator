@@ -30,7 +30,7 @@ This package aims at bringing the powerful capabilities of [Navigator 2.0](https
 
 # Quick Start
 
-To get started with `AdvancedNavigator`, create a `MaterialApp`/`CupertinoApp` and return `AdvancedNavigator` from the builder function:
+To get started, create a `MaterialApp` or `CupertinoApp` and return an instance of `AdvancedNavigator` from its builder function:
 
 ```dart
 MaterialApp(
@@ -58,12 +58,12 @@ AdvancedNavigator(
       MaterialPage(key: ValueKey('profile${args['userId']}'), child: ViewProfile(args['userId'])),
     ],
   },
-)
+),
 ```
 
-Now, you can open these paths from anywhere in your app with `AdvancedNavigator.openNamed(context, <uri>)`. ([see Paths Section](#paths))
+Now, you can open these paths from anywhere in your app with `AdvancedNavigator.openNamed(context, <uri>)`. ([see Paths](#paths))
 
-Similarly, you can define named `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` and `AdvancedNavigator.pop(context)` respectively. ([see Pages Section](#pages))
+Similarly, you can define named `pages` which can be pushed to and popped from the top of the navigators page stack with `AdvancedNavigator.pushNamed(context, <page name>)` and `AdvancedNavigator.pop(context)` respectively. ([see Pages](#pages))
 
 # Examples
 
@@ -90,7 +90,7 @@ AdvancedNavigator(
 );
 ```
 
-This is how the navigation is performed:
+This is how the navigation is performed from the list tile:
 
 ```dart
 ListTile(
