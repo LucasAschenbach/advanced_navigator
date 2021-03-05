@@ -1,3 +1,8 @@
+# 0.1.1
+* Update README.md
+* Add page generator functions
+* Fix path generator functions
+
 # 0.1.0+1
 * Update README.md
 * Fixes from pedantic analyzer
