@@ -188,7 +188,7 @@ AdvancedNavigator(
 );
 ```
 
-Just like paths, pages can also be generated using path generator functions. Correspondingly, they are being used as a fallback for named pages from the aforementioned `pages` map:
+Just like paths, pages can also be generated using generator functions. Correspondingly, they are being used as a fallback for named pages from the aforementioned `pages` map:
 
 ```dart
 AdvancedNavigator(
