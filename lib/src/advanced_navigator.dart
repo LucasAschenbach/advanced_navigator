@@ -651,7 +651,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
     } else {
       // generate page with callback
       assert(() {
-        if (onGenerateRoute == null) {
+        if (onGeneratePage == null) {
           throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary('AdvancedNavigator.onGeneratePage was null but the referenced page had no corresponding page in the app.'),
             ErrorDescription(
@@ -669,7 +669,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       page = onGeneratePage(routeSettings);
       if (page == null) {
         assert(() {
-          if (onUnknownPath == null) {
+          if (onUnknownPage == null) {
             throw FlutterError.fromParts(<DiagnosticsNode>[
               ErrorSummary('AdvancedNavigator.onGeneratePage returned null when requested to build page "$name".'),
               ErrorDescription(
@@ -806,7 +806,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
     // generate path with callback
     if (changedPages == null) {
       assert(() {
-        if (onGenerateRoute == null) {
+        if (onGeneratePath == null) {
           throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary('AdvancedNavigator.onGeneratePath was null but the referenced path had no corresponding path in the app.'),
             ErrorDescription(
