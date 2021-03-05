@@ -1,3 +1,7 @@
+# 0.1.0+1
+* Update README.md
+* Fixes from pedantic analyzer
+
 # 0.1.0
 * Nested navigator communication:
   * Navigation request forwarding to nested child navigators
