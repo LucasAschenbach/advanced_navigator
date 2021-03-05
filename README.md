@@ -188,6 +188,19 @@ AdvancedNavigator(
 );
 ```
 
+Just like paths, pages can also be generated using path generator functions. Correspondingly, they are being used as a fallback for named pages from the aforementioned `pages` map:
+
+```dart
+AdvancedNavigator(
+  onGeneratePage: (RouteSettings configuration) {
+    // code here
+  },
+  onUnknownPage: (RouteSettings configuration) {
+    // fallback code here
+  },
+);
+```
+
 > **Important:** Always be sure to **assign a restorable key to every page** before adding it to the page stack. Otherwise, there will be issues with *path navigation* operations as the navigator won't be able to tell whether a page has already been in the page stack before the request was made or not.
 
 ## Routes
