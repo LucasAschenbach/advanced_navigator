@@ -6,6 +6,9 @@ part 'route_information_provider.dart';
 /// A function for building a page stack from route information
 typedef PathFactory = RouterConfiguration Function(RouteInformation);
 
+/// A function for building a page from route settings
+typedef PageFactory = Page Function(RouteSettings);
+
 /// A widget that manages a set of child widgets with a stack discipline.
 /// 
 /// This widget wraps a [Router] and [Navigator] object for maintaining a full 
@@ -46,10 +49,12 @@ class AdvancedNavigator extends StatefulWidget {
     Key key,
     this.parent,
     this.initialLocation,
-    this.pages = const {},
     this.paths = const {},
     this.onGeneratePath,
     this.onUnknownPath,
+    this.pages = const {},
+    this.onGeneratePage,
+    this.onUnknownPage,
     this.onPopPage,
     this.routes,
     this.onGenerateRoute,
@@ -110,10 +115,12 @@ class AdvancedNavigator extends StatefulWidget {
   final AdvancedNavigatorState parent;
   // Page API
   final String initialLocation;
-  final Map<String, Page Function(Map<String, dynamic>)> pages;
   final Map<String, List<Page> Function(Map<String, dynamic>)> paths;
   final PathFactory onGeneratePath;
   final PathFactory onUnknownPath;
+  final Map<String, Page Function(Map<String, dynamic>)> pages;
+  final PageFactory onGeneratePage;
+  final PageFactory onUnknownPage;
   final PopPageCallback onPopPage;
   // Route API
   final Map<String, Route> routes;
@@ -463,12 +470,14 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
       onNestedPathUpdate: (configuration) {
         observedRouteInformation = configuration;
       },
-      pages: widget.pages,
       paths: widget.paths.map(
         (key, value) => MapEntry(AdvancedNavigator.parsePath(key), value),
       ),
       onGeneratePath: widget.onGeneratePath,
       onUnknownPath: widget.onUnknownPath,
+      pages: widget.pages,
+      onGeneratePage: widget.onGeneratePage,
+      onUnknownPage: widget.onUnknownPage,
       onPopPage: widget.onPopPage,
       onGenerateRoute: widget.onGenerateRoute,
       onUnknownRoute: widget.onUnknownRoute,
@@ -566,10 +575,12 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   DefaultRouterDelegate({
     @required this.context,
     @required this.onNestedPathUpdate,
-    @required this.pages,
     @required this.paths,
     @required this.onGeneratePath,
     @required this.onUnknownPath,
+    @required this.pages,
+    @required this.onGeneratePage,
+    @required this.onUnknownPage,
     @required this.onPopPage,
     @required this.onGenerateRoute,
     @required this.onUnknownRoute,
@@ -589,10 +600,12 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
        
   final BuildContext context;
   final void Function(RouteInformation) onNestedPathUpdate;
-  final Map<String, Page Function(Map<String, dynamic>)> pages;
   final Map<PathGroup, List<Page> Function(Map<String, dynamic>)> paths;
   final PathFactory onGeneratePath;
   final PathFactory onUnknownPath;
+  final Map<String, Page Function(Map<String, dynamic>)> pages;
+  final PageFactory onGeneratePage;
+  final PageFactory onUnknownPage;
   final PopPageCallback onPopPage;
   final RouteFactory onGenerateRoute;
   final RouteFactory onUnknownRoute;
@@ -632,7 +645,56 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   /// Pushes page with given name to top of navigator page stack and inflates it.
   @optionalTypeArgs
   Future<T> pushNamed<T extends Object>(String name, { Map<String, dynamic> arguments = const <String, dynamic>{} }) async {
-    var page = pages[name](arguments);
+    Page page;
+    if (pages.containsKey(name)) {
+      page = pages[name](arguments);
+    } else {
+      // generate page with callback
+      assert(() {
+        if (onGenerateRoute == null) {
+          throw FlutterError.fromParts(<DiagnosticsNode>[
+            ErrorSummary('AdvancedNavigator.onGeneratePage was null but the referenced page had no corresponding page in the app.'),
+            ErrorDescription(
+              'The referenced page was: "$name" '
+              'To use the AdvancedNavigator API with named pages (pushNamed), '
+              'the AdvancedNavigator must be provided with either a matching reference '
+              'in the pages map or an onGeneratePage handler.\n'
+            ),
+            DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this, style: DiagnosticsTreeStyle.errorProperty),
+          ]);
+        }
+        return true;
+      }());
+      var routeSettings = RouteSettings(name: name, arguments: arguments);
+      page = onGeneratePage(routeSettings);
+      if (page == null) {
+        assert(() {
+          if (onUnknownPath == null) {
+            throw FlutterError.fromParts(<DiagnosticsNode>[
+              ErrorSummary('AdvancedNavigator.onGeneratePage returned null when requested to build page "$name".'),
+              ErrorDescription(
+                'The onGeneratePage callback must never return null, unless an onUnknownPage '
+                'callback is provided as well.'
+              ),
+              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this, style: DiagnosticsTreeStyle.errorProperty),
+            ]);
+          }
+          return true;
+        }());
+        page = onUnknownPage(routeSettings);
+        assert(() {
+          if (page == null) {
+            throw FlutterError.fromParts(<DiagnosticsNode>[
+              ErrorSummary('Navigator.onUnknownPage returned null when requested to build page "$name".'),
+              ErrorDescription('The onUnknownPage callback must never return null.'),
+              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this, style: DiagnosticsTreeStyle.errorProperty),
+            ]);
+          }
+          return true;
+        }());
+      }
+    }
+    assert(page != null);
     _pages.add(page);
     notifyListeners();
     return null;
