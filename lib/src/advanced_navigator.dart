@@ -766,6 +766,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
     if (paths.isNotEmpty) {
       // find matching reference
       var uri = Uri.parse(configuration.location);
+      var query = uri.query;
       PathGroup pathGroup;
       String internalPath;
       String nestedPath;
@@ -779,21 +780,22 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
             if (iterationNestedPath.isEmpty || iterationNestedPath[0] == '/') {
               pathGroup = iterationPathGroup;
               internalPath = match.group(0);
-              nestedPath = iterationNestedPath.isEmpty 
+              nestedPath = iterationNestedPath.isEmpty && query.isEmpty
                   ? null
-                  : iterationNestedPath;
+                  : iterationNestedPath + '?' + query;
             }
           }
         }
       });
-      // parse args
+      // update router config if match found
       if (pathGroup != null) {
+        // parse args
         var args = <String, String>{};
         args.addAll(uri.queryParameters);
         args.addAll(pathGroup.args.map((pos, argName) => MapEntry(
           argName, uri.pathSegments[pos]
         )));
-        changedPages = paths[pathGroup](args);
+        changedPages = paths[pathGroup](args);      
         currentInternalPath = RouteInformation(
           location: internalPath,
           state: configuration.state,
