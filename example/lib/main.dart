@@ -62,6 +62,11 @@ class AppItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BackButtonDispatcher parentDispatcher = Router.of(context).backButtonDispatcher;
+    BackButtonDispatcher childDispatcher = parentDispatcher.createChildBackButtonDispatcher();
+
+    childDispatcher.takePriority();
+
     return Provider<int>.value(
       value: itemNumber,
       child: AdvancedNavigator(
@@ -75,6 +80,7 @@ class AppItem extends StatelessWidget {
             CupertinoPage(child: ViewEditItem()),
           ],
         },
+        backButtonDispatcher: childDispatcher,
       ),
     );
   }
