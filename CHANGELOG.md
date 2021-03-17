@@ -1,3 +1,7 @@
+# 0.1.1+1
+* Update example with BackButtonDispatcher
+* Fix: query parameters not forwarded to nested navigators
+
 # 0.1.1
 * Update README.md
 * Add page generator functions
