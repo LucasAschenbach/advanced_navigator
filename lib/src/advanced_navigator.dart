@@ -776,14 +776,15 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
           // longest matched path takes precidence
           if (iterationPathGroup.length > (pathGroup?.length ?? -1)) {
             var iterationNestedPath = match.input.substring(match.end);
-            // pattern must match entire string or be followed by '/'
-            if (iterationNestedPath.isEmpty || iterationNestedPath[0] == '/') {
-              pathGroup = iterationPathGroup;
-              internalPath = match.group(0);
-              nestedPath = iterationNestedPath.isEmpty && query.isEmpty
-                  ? null
-                  : iterationNestedPath + '?' + query;
+            // nestedPath location must start with '/'
+            if (iterationNestedPath.isNotEmpty && iterationNestedPath[0] != '/') {
+              iterationNestedPath = '/' + iterationNestedPath;
             }
+            pathGroup = iterationPathGroup;
+            internalPath = match.group(0);
+            nestedPath = iterationNestedPath.isEmpty && query.isEmpty
+                ? null
+                : iterationNestedPath + '?' + query;
           }
         }
       });
