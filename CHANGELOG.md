@@ -1,3 +1,6 @@
+# 0.1.1+2
+* Fix: named path '/' not forwarding requests to nested navigators
+
 # 0.1.1+1
 * Update example with BackButtonDispatcher
 * Fix: query parameters not forwarded to nested navigators
