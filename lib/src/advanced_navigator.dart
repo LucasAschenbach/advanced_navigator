@@ -320,6 +320,16 @@ class AdvancedNavigator extends StatefulWidget {
     return AdvancedNavigator.of(context).pushNamed(name, arguments: arguments);
   }
 
+  @optionalTypeArgs
+  static Future<T> attach<T extends Object>(BuildContext context, Route<T> route) async {
+    return AdvancedNavigator.of(context).attach(route);
+  }
+
+  @optionalTypeArgs
+  static Future<T> attachNamed<T extends Object>(BuildContext context, String name, { Object arguments }) async {
+    return AdvancedNavigator.of(context).attachNamed(name, arguments: arguments);
+  }
+
   /// Pop the top-most route off the navigator that most tightly encloses the
   /// given context.
   ///
