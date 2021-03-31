@@ -1,5 +1,5 @@
 # 0.1.1+3
-* add static `attach()` and `attachNamed()` functions to `AdvancedNavigator` class
+* Add static `attach()` and `attachNamed()` functions to `AdvancedNavigator` class
 
 # 0.1.1+2
 * Fix: named path '/' not forwarding requests to nested navigators
