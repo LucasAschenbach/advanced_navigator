@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 part 'route_information_provider.dart';
+part 'back_button_dispatcher.dart';
 
 /// A function for building a page stack from route information
 typedef PathFactory = RouterConfiguration Function(RouteInformation);
@@ -391,6 +392,9 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
 
   DefaultRouterDelegate _routerDelegate;
   RouteInformationProvider _informationProvider;
+  BackButtonDispatcher _backButtonDispatcher;
+
+  CurrentPageKeyObservable _currentPageKeyObservable = CurrentPageKeyObservable();
 
   Set<AdvancedNavigatorState> _children;
   
@@ -427,6 +431,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
   @override
   void dispose() {
     widget.parent?.removeChild(this);
+    _routerDelegate?.removeListener(_handleRouterDelegateNotification);
     super.dispose();
   }
 
@@ -472,6 +477,11 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
     _routerDelegate?.pop<T>(result);
   }
 
+  void _handleRouterDelegateNotification() {
+    // update current topmost page key value
+    _currentPageKeyObservable.value = _routerDelegate._pages.last.key;
+  }
+
   @override
   Widget build(BuildContext context) {
     // persist state on rebuild: ??=
@@ -495,11 +505,11 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
       reportsRouteUpdateToEngine: widget.reportsRouteUpdateToEngine,
       observers: widget.observers,
       restorationScopeId: widget.restorationScopeId,
-    );
+    )..addListener(_handleRouterDelegateNotification);
 
     // persist state on rebuild: == null
+    var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
     if (_informationProvider == null) {
-      var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
       var initialLocation = widget.initialLocation
           ?? AdvancedNavigator.defaultPathName;
       var initialRouteInformation = RouteInformation(
@@ -530,12 +540,37 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
       }
     }
 
+    // persist state on rebuild: ??=
+    if (_backButtonDispatcher == null) {
+      // configure back button dispatcher
+      var backButtonDispatcher = widget.backButtonDispatcher;
+      if (backButtonDispatcher != null) {
+        var backButtonDispatcher = widget.backButtonDispatcher;
+        if (ancestor != null && backButtonDispatcher is ChildBackButtonDispatcher) {
+          print('creating NestedBackButtonDispatcher');
+          // prioritize topmost page for back button events
+          var nestedBackButtonDispatcher = NestedBackButtonDispatcher
+              .fromChildBackButtonDispatcher(backButtonDispatcher);
+          nestedBackButtonDispatcher.ancestorNavigator =
+              ancestor._currentPageKeyObservable;
+          nestedBackButtonDispatcher.ancestorPageKey = 
+              ancestor._currentPageKeyObservable.value;
+          backButtonDispatcher = nestedBackButtonDispatcher;
+        } else {
+          backButtonDispatcher = RootBackButtonDispatcher();
+        }
+      } else {
+        backButtonDispatcher = RootBackButtonDispatcher();
+      }
+      _backButtonDispatcher = backButtonDispatcher;
+    }
+
     return Router(
       key: _routerKey,
       routerDelegate: _routerDelegate,
       routeInformationProvider: _informationProvider,
       routeInformationParser: DefaultRouteInformationParser(),
-      backButtonDispatcher: widget.backButtonDispatcher ?? RootBackButtonDispatcher(),
+      backButtonDispatcher: _backButtonDispatcher,
     );
   }
 }
@@ -738,6 +773,16 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       }
     }
   }
+
+  Future<void> back() {
+
+  }
+
+  Future<void> forward() {
+    
+  }
+
+
 
   @override
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
