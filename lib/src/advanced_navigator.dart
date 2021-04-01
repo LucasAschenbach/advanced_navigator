@@ -537,10 +537,13 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
         if (ancestor != null) {
           var route = ModalRoute.of(context);
           if (route != null) {
+            var parentBackButtonDispatcher = ancestor._backButtonDispatcher;
             backButtonDispatcher = NestedBackButtonDispatcher(
-              ancestor._backButtonDispatcher,
+              parentBackButtonDispatcher,
               route: route,
             );
+            parentBackButtonDispatcher.deferTo(
+                backButtonDispatcher as ChildBackButtonDispatcher);
           }
         } else {
           backButtonDispatcher = RootBackButtonDispatcher();
