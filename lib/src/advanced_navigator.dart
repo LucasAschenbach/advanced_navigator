@@ -392,6 +392,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
 
   DefaultRouterDelegate _routerDelegate;
   RouteInformationProvider _informationProvider;
+  BackButtonDispatcher _backButtonDispatcher;
 
   Set<AdvancedNavigatorState> _children;
   
@@ -499,8 +500,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
     );
 
     // persist state on rebuild: == null
+    var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
     if (_informationProvider == null) {
-      var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
       var initialLocation = widget.initialLocation
           ?? AdvancedNavigator.defaultPathName;
       var initialRouteInformation = RouteInformation(
@@ -530,13 +531,30 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
         );
       }
     }
+    if (_backButtonDispatcher == null) {
+      var backButtonDispatcher = widget.backButtonDispatcher;
+      if (backButtonDispatcher == null) {
+        if (ancestor != null) {
+          var route = ModalRoute.of(context);
+          if (route != null) {
+            backButtonDispatcher = NestedBackButtonDispatcher(
+              ancestor._backButtonDispatcher,
+              route: route,
+            );
+          }
+        } else {
+          backButtonDispatcher = RootBackButtonDispatcher();
+        }
+      }
+      _backButtonDispatcher = backButtonDispatcher;
+    }
 
     return Router(
       key: _routerKey,
       routerDelegate: _routerDelegate,
       routeInformationProvider: _informationProvider,
       routeInformationParser: DefaultRouteInformationParser(),
-      backButtonDispatcher: widget.backButtonDispatcher ?? RootBackButtonDispatcher(),
+      backButtonDispatcher: _backButtonDispatcher,
     );
   }
 }
