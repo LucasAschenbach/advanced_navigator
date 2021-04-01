@@ -1,6 +1,7 @@
 # 0.1.2
 * Add `NestedBackButtonDispatcher` class
 * Automatically configure `backButtonDispatcher` based on widget tree (no manual configuration required anymore!)
+* Update example
 
 # 0.1.1+3
 * Add static `attach()` and `attachNamed()` functions to `AdvancedNavigator` class
