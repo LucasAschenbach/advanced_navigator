@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 part 'route_information_provider.dart';
+part 'back_button_dispatcher.dart';
 
 /// A function for building a page stack from route information
 typedef PathFactory = RouterConfiguration Function(RouteInformation);
