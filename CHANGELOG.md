@@ -1,3 +1,6 @@
+# 0.1.2+1
+* Fix: back button event not automatically deferred to child back button dispatchers
+
 # 0.1.2
 * Add `NestedBackButtonDispatcher` class
 * Automatically configure `backButtonDispatcher` based on widget tree (no manual configuration required anymore!)
