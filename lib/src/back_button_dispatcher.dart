@@ -9,6 +9,10 @@ class NestedBackButtonDispatcher extends ChildBackButtonDispatcher {
 
   final Route _route;
 
+  void dispose() {
+    parent.forget(this);
+  }
+
   @override
   Future<bool> invokeCallback(Future<bool> defaultValue) {
     // only pop if navigator is contained in top-most route

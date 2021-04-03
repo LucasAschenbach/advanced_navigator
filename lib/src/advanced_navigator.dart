@@ -429,6 +429,10 @@ class AdvancedNavigatorState extends State<AdvancedNavigator>
   @override
   void dispose() {
     widget.parent?.removeChild(this);
+    var backButtonDispatcher = _backButtonDispatcher;
+    if (backButtonDispatcher is NestedBackButtonDispatcher) {
+      backButtonDispatcher.dispose();
+    }
     super.dispose();
   }
 
