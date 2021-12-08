@@ -1,3 +1,6 @@
+# 0.2.0
+* Port to Null-Safety
+
 # 0.1.2+1
 * Fix: back button event not automatically deferred to child back button dispatchers
 
