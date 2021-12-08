@@ -3,20 +3,22 @@ part of 'advanced_navigator.dart';
 /// Object which notifies previously registered [RouteInformationObserver]s upon
 /// changes to the `currentRouteInformation` member by calling their
 /// `didPushRouteInformation` method with the updated route information.
-/// 
+///
 /// This class is mixed into the [AdvancedNavigatorState] for handling
 /// communication with nested navigators
-/// 
-/// See also: 
+///
+/// See also:
 /// * [RouteInformationObserver]: implements `didPushRouteInformation` for
 /// responding to route information changes.
-/// 
+///
 class RouteInformationObservable {
-  List<RouteInformationObserver> _observers = [];
+  final List<RouteInformationObserver> _observers = [];
 
-  RouteInformation _observedRouteInformation;
-  RouteInformation get observedRouteInformation => _observedRouteInformation;
-  set observedRouteInformation(RouteInformation value) {
+  RouteInformation? _observedRouteInformation;
+
+  RouteInformation? get observedRouteInformation => _observedRouteInformation;
+
+  set observedRouteInformation(RouteInformation? value) {
     if (_observedRouteInformation == value) {
       return;
     }
@@ -38,24 +40,24 @@ class RouteInformationObservable {
     _observers.remove(observer);
   }
 
-  /*@mustCallSuper
+/*@mustCallSuper
   void dispose() {
     _observers = null;
   }*/
 }
 
 /// Observer to a [RouteInformationObservable]
-/// 
+///
 /// Reacts to changes in observed object with `didPushNewRouteInformation` and
 /// is mixed into [NestedRouteInformationProvider] for handling communicatiion
 /// with parent navigators.
-/// 
+///
 /// See also:
 /// * [RouteInformationObservable]: Calls `didPushRouteInformation` upon changes
 /// to its `currentRouteInformation`
-/// 
+///
 abstract class RouteInformationObserver {
-  Future<bool> didPushRouteInformation(RouteInformation routeInformation) => Future<bool>.value(false);
+  Future<bool> didPushRouteInformation(RouteInformation? routeInformation) => Future<bool>.value(false);
 }
 
 /// Route information provider working supplementary to a single root provider
@@ -63,48 +65,44 @@ class NestedRouteInformationProvider extends RouteInformationProvider
     with RouteInformationObserver, ChangeNotifier {
   NestedRouteInformationProvider(
     this._parent, {
-    @required RouteInformation initialRouteInformation,
-  }) : assert(_parent != null),
-       assert(initialRouteInformation != null) {
-    _value = _initialRouteInformation = _parent.currentNestedPath
-        ?? initialRouteInformation;
-  }
+    required RouteInformation initialRouteInformation,
+  })  : _initialRouteInformation = initialRouteInformation,
+        _value = initialRouteInformation = _parent.currentNestedPath ?? initialRouteInformation;
 
-  RouteInformation _initialRouteInformation;
+  final AdvancedNavigatorState _parent;
+
+  final RouteInformation _initialRouteInformation;
 
   AdvancedNavigatorState get parent => _parent;
-  AdvancedNavigatorState _parent;
-  
+
   @override
   RouteInformation get value => _value;
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(RouteInformation routeInformation) {
+  void routerReportsNewRouteInformation(RouteInformation routeInformation,
+      {required RouteInformationReportingType type}) {
     // notify parent of changes in nested navigator
     parent.updatedSubtree(routeInformation);
     _value = routeInformation;
   }
 
-  void _parentReportsNewRouteInformation(RouteInformation routeInformation) {
-    if (_value == routeInformation)
-      return;
+  void _parentReportsNewRouteInformation(RouteInformation? routeInformation) {
+    if (_value == routeInformation) return;
     _value = routeInformation ?? _initialRouteInformation;
     notifyListeners();
   }
 
   @override
   void addListener(VoidCallback listener) {
-    if (!hasListeners)
-      parent.addObserver(this);
+    if (!hasListeners) parent.addObserver(this);
     super.addListener(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
     super.removeListener(listener);
-    if (!hasListeners)
-      parent.removeObserver(this);
+    if (!hasListeners) parent.removeObserver(this);
   }
 
   @override
@@ -113,13 +111,12 @@ class NestedRouteInformationProvider extends RouteInformationProvider
     // will be added and removed in a coherent fashion such that when the object
     // is no longer being used, there's no listener, and so it will get garbage
     // collected.
-    if (hasListeners)
-      parent.removeObserver(this);
+    if (hasListeners) parent.removeObserver(this);
     super.dispose();
   }
-  
+
   @override
-  Future<bool> didPushRouteInformation(RouteInformation routeInformation) async {
+  Future<bool> didPushRouteInformation(RouteInformation? routeInformation) async {
     assert(hasListeners);
     _parentReportsNewRouteInformation(routeInformation);
     return true;
@@ -127,18 +124,17 @@ class NestedRouteInformationProvider extends RouteInformationProvider
 }
 
 /// Route information provider with no communication to external sources
-class EmptyRouteInformationProvider extends RouteInformationProvider
-    with ChangeNotifier {
-  EmptyRouteInformationProvider({
-    @required RouteInformation initialRouteInformation
-  }) : _value = initialRouteInformation;
+class EmptyRouteInformationProvider extends RouteInformationProvider with ChangeNotifier {
+  EmptyRouteInformationProvider({required RouteInformation initialRouteInformation})
+      : _value = initialRouteInformation;
 
   @override
   RouteInformation get value => _value;
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(RouteInformation routeInformation) {
+  void routerReportsNewRouteInformation(RouteInformation routeInformation,
+      {required RouteInformationReportingType type}) {
     _value = routeInformation;
   }
 }

@@ -3,7 +3,7 @@ part of 'advanced_navigator.dart';
 class NestedBackButtonDispatcher extends ChildBackButtonDispatcher {
   NestedBackButtonDispatcher(
     BackButtonDispatcher parent, {
-    @required Route route,
+    required Route route,
   }) : _route = route,
        super(parent);
 

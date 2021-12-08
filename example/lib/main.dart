@@ -8,12 +8,13 @@ void main() {
 }
 
 class App extends StatelessWidget {
-  const App({ Key key }) : super(key: key);
+  const App({ Key? key }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, _) => AdvancedNavigator(
+        tag: 'Main',
         paths: {
           '/': (_) => [
             CupertinoPage(key: ValueKey('home'), child: ViewHome()),
@@ -32,7 +33,7 @@ class App extends StatelessWidget {
 }
 
 class ViewHome extends StatelessWidget {
-  const ViewHome({Key key}) : super(key: key);
+  const ViewHome({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,7 @@ class ViewHome extends StatelessWidget {
 }
 
 class AppItem extends StatelessWidget {
-  const AppItem(this.itemNumber, {Key key}) : super(key: key);
+  const AppItem(this.itemNumber, {Key? key}) : super(key: key);
 
   final int itemNumber;
 
@@ -65,6 +66,7 @@ class AppItem extends StatelessWidget {
     return Provider<int>.value(
       value: itemNumber,
       child: AdvancedNavigator(
+        tag: 'AppItem',
         parent: AdvancedNavigator.of(context),
         paths: {
           '/': (_) => [
@@ -81,7 +83,7 @@ class AppItem extends StatelessWidget {
 }
 
 class ViewItem extends StatelessWidget {
-  const ViewItem({Key key}) : super(key: key);
+  const ViewItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +113,7 @@ class ViewItem extends StatelessWidget {
 }
 
 class ViewEditItem extends StatelessWidget {
-  const ViewEditItem({Key key}) : super(key: key);
+  const ViewEditItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
