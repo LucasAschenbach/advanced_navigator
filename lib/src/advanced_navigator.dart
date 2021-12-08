@@ -424,10 +424,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
     _routerDelegate._currentNestedPath = subtreeConfiguration;
     var configuration = _routerDelegate.currentConfiguration;
     //TODO: check type
-    _informationProvider?.routerReportsNewRouteInformation(
-      configuration,
-      type: RouteInformationReportingType.navigate,
-    );
+    _informationProvider?.routerReportsNewRouteInformation(configuration);
   }
 
   @override
