@@ -1,6 +1,6 @@
 name: advanced_navigator
 description: Flutter's Navigator 2.0 as one easy-to-use widget with full page history manipulation operations, simplified pop event delegation and powerful nesting. 
-version: 0.2.0
+version: 0.2.0+1
 repository: https://github.com/LucasAschenbach/advanced_navigator
 
 environment:
