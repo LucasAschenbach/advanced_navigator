@@ -129,7 +129,7 @@ Furthermore, a *path navigations* operation performed at a given navigator can a
 
 Paths are in most cases declared through the `paths` argument which provides a simple and clear interface for fully customizable page stack manipulations. It maps a set of URIs to path builder functions which will be invoked whenever `AdvancedNavigator.openNamed(context, <uri>)` with the associated URI is called. The returned path (list of pages) then replaces the navigators current page stack.
 
-> `AdvancedNavigator` expects each requested path name to be in the standard [URI](https://tools.ietf.org/html/rfc2396) format and will parse it as such. Therefore, to take full advantage of this widget it is recommended to design path names with that format in mind.
+> `AdvancedNavigator` expects each requested path name to be in the standard [URI](https://tools.ietf.org/html/rfc2396) format and will parse it as such. Therefore, to take full advantage of this widget it is recommended to choose path names with that format in mind.
 
 There is built in argument parsing for extracting arguments such as id's directly from the provided URI. In the path name, arguments are marked with enclosing parentheses `.../{argName}/...` and can be read from the args argument in the path builder function to be used for building the page stack.
 
@@ -256,7 +256,7 @@ TextButton(
 ),
 ```
 
-The `of()` function also provides the option to specify a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators without having to pass down the build context.
+The `of()` function also provides the option to specify a `skip` parameter which allows you to access navigators which are further up in the widget tree above other navigators or even a `tag` filter argument for precise control over which navigator is returned without having to pass down any build contexts across widgets.
 
 ## Nesting
 

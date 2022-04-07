@@ -1,3 +1,6 @@
+# 0.2.1
+* Add `tag` argument to `of()` and `maybeOf()` for reliably accessing navigators with a particular tag
+
 # 0.2.0+1
 * Port for Flutter v2.8.0
 

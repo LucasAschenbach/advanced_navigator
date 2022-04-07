@@ -66,7 +66,7 @@ class AdvancedNavigator extends StatefulWidget {
     this.reportsRouteUpdateToEngine = false,
     this.observers = const <NavigatorObserver>[],
     this.restorationScopeId,
-    required this.tag,
+    this.tag,
   }) : super(key: key);
 
   /// The navigator instance to which all navigation events from this navigator
@@ -133,7 +133,7 @@ class AdvancedNavigator extends StatefulWidget {
   final bool reportsRouteUpdateToEngine;
   final List<NavigatorObserver> observers;
   final String? restorationScopeId;
-  final String tag;
+  final String? tag;
 
   static const String defaultPathName = '/';
 
@@ -220,23 +220,30 @@ class AdvancedNavigator extends StatefulWidget {
   ///
   /// The `skip` argument denominates the number of instances to be skipped when
   /// searching up the widget tree for an instance of [AdvancedNavigator].
+  /// 
+  /// With the `tag` argument specified, only navigators with a matching tag
+  /// will be considered. Should multiple navigators carry a matching tag, the
+  /// closest instance after skipping `skip` instances will be returned.
   ///
-  /// If `rootNavigator` is set to true, `skip` is ignored and the state from
-  /// the furthest instance of this class is given instead. Useful for pushing
-  /// contents above all subsequent instances of [AdvancedNavigator].
-  ///
-  /// If there is no [AdvancedNavigator] in the give `context`, this function
-  /// will throw a [FlutterError] in debug mode, and an exception in release
-  /// mode.
+  /// If `rootNavigator` is set to true, both `skip` and `tag` are ignored and
+  /// the state from the furthest instance of this class is given instead.
+  /// Useful for pushing contents above all subsequent instances of
+  /// [AdvancedNavigator].
+  /// 
+  /// If there is no mathcing [AdvancedNavigator] in the give `context`, this
+  /// function will throw a [FlutterError] in debug mode, and an exception in
+  /// release mode.
   static AdvancedNavigatorState of(
     BuildContext context, {
     bool rootNavigator = false,
     int skip = 0,
+    String? tag,
   }) {
     var navigator = AdvancedNavigator.maybeOf(
       context,
       rootNavigator: rootNavigator,
       skip: skip,
+      tag: tag,
     );
     assert(() {
       if (navigator == null) {
@@ -267,17 +274,23 @@ class AdvancedNavigator extends StatefulWidget {
   ///
   /// The `skip` argument denominates the number of instances to be skipped when
   /// searching up the widget tree for an instance of [AdvancedNavigator].
+  /// 
+  /// With the `tag` argument specified, only navigators with a matching tag
+  /// will be considered. Should multiple navigators carry a matching tag, the
+  /// closest instance after skipping `skip` instances will be returned.
   ///
-  /// If `rootNavigator` is set to true, `skip` is ignored and the state from
-  /// the furthest instance of this class is given instead. Useful for pushing
-  /// contents above all subsequent instances of [AdvancedNavigator].
+  /// If `rootNavigator` is set to true, both `skip` and `tag` are ignored and
+  /// the state from the furthest instance of this class is given instead.
+  /// Useful for pushing contents above all subsequent instances of
+  /// [AdvancedNavigator].
   ///
-  /// Will return null if there is no ancestor [AdvancedNavigator] in the
-  /// `context`.
+  /// Will return null if there is no matching ancestor [AdvancedNavigator] in
+  /// the `context`.
   static AdvancedNavigatorState? maybeOf(
     BuildContext context, {
     bool rootNavigator = false,
     int skip = 0,
+    String? tag,
   }) {
     assert(rootNavigator || skip >= 0);
     AdvancedNavigatorState? navigator;
@@ -289,12 +302,17 @@ class AdvancedNavigator extends StatefulWidget {
       navigator = context.findRootAncestorStateOfType<AdvancedNavigatorState>();
     } else {
       context.visitAncestorElements((element) {
-        if (element is StatefulElement && element.state is AdvancedNavigatorState) {
-          if (skip <= 0) {
-            navigator = element.state as AdvancedNavigatorState;
-            return false;
+        if (element is StatefulElement) {
+          var state = element.state;
+          if (state is AdvancedNavigatorState) {
+            if (tag == null || tag == state.tag) {
+              if (skip == 0) {
+                navigator = state;
+                return false;
+              }
+              skip--;
+            }
           }
-          skip--;
         }
         return true;
       });
@@ -395,6 +413,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
   BackButtonDispatcher? _backButtonDispatcher;
 
   Set<AdvancedNavigatorState> _children = {};
+
+  String? get tag => widget.tag;
 
   RouteInformation? get currentNestedPath => _routerDelegate._currentNestedPath;
 
@@ -646,7 +666,7 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   final bool reportsRouteUpdateToEngine;
   final List<NavigatorObserver> observers;
   final String? restorationScopeId;
-  final String tag;
+  final String? tag;
 
   RouteInformation _currentInternalPath = RouteInformation();
   RouteInformation? _currentNestedPath;
