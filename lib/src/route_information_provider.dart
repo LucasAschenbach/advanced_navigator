@@ -81,7 +81,7 @@ class NestedRouteInformationProvider extends RouteInformationProvider
 
   @override
   void routerReportsNewRouteInformation(RouteInformation routeInformation,
-      {required RouteInformationReportingType type}) {
+      {RouteInformationReportingType type = RouteInformationReportingType.none}) {
     // notify parent of changes in nested navigator
     parent.updatedSubtree(routeInformation);
     _value = routeInformation;
@@ -134,7 +134,7 @@ class EmptyRouteInformationProvider extends RouteInformationProvider with Change
 
   @override
   void routerReportsNewRouteInformation(RouteInformation routeInformation,
-      {required RouteInformationReportingType type}) {
+      {RouteInformationReportingType type = RouteInformationReportingType.none}) {
     _value = routeInformation;
   }
 }
