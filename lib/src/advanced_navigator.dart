@@ -552,8 +552,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
       } else {
         // navigator is at root
         initialLocation =
-            WidgetsBinding.instance!.window.defaultRouteName != AdvancedNavigator.defaultPathName
-                ? WidgetsBinding.instance!.window.defaultRouteName
+            WidgetsBinding.instance.window.defaultRouteName != AdvancedNavigator.defaultPathName
+                ? WidgetsBinding.instance.window.defaultRouteName
                 : initialLocation;
         initialRouteInformation = RouteInformation(
           location: initialLocation,
