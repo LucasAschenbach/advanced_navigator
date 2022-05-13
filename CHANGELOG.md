@@ -1,3 +1,6 @@
+# 0.2.1+2
+* Fix analyzer warnings
+
 # 0.2.1+1
 * Port for Flutter v3.0.0
 
