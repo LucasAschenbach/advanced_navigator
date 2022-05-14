@@ -1,3 +1,6 @@
+# 0.2.1+3
+* Fix static analysis
+
 # 0.2.1+2
 * Fix analyzer warnings
 
