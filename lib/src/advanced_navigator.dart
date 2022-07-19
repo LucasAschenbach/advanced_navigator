@@ -414,6 +414,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
 
   Set<AdvancedNavigatorState> _children = {};
 
+  NavigatorState? get navigatorState => _routerDelegate.navigatorKey.currentState;
+
   String? get tag => widget.tag;
 
   RouteInformation? get currentNestedPath => _routerDelegate._currentNestedPath;
