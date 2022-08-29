@@ -525,6 +525,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
         onNestedPathUpdate: (configuration) {
           observedRouteInformation = configuration;
         },
+        initialLocation: initialLocation,
         paths: widget.paths.map(
           (key, value) => MapEntry(AdvancedNavigator.parsePath(key), value),
         ),
@@ -611,11 +612,13 @@ class PathGroup {
   const PathGroup(
     this.pattern, {
     required this.length,
+    required this.nested,
     this.args = const {},
   });
 
   final RegExp pattern;
   final int length;
+  final bool nested;
   final Map<int, String> args;
 }
 
@@ -679,6 +682,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   DefaultRouterDelegate({
     required this.context,
     required this.onNestedPathUpdate,
+    required this.initialLocation,
     required this.paths,
     required this.onGeneratePath,
     required this.onUnknownPath,
@@ -697,6 +701,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
 
   final BuildContext context;
   final void Function(AdvancedRouteInformation?) onNestedPathUpdate;
+  final String initialLocation;
   final Map<PathGroup, List<Page> Function(PathArguments)> paths;
   final PathFactory? onGeneratePath;
   final PathFactory? onUnknownPath;
@@ -839,7 +844,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
       return location;
     }
     location.trim();
-    location.replaceAll('//', '/');
+    location.replaceAll(RegExp(r'[/]+'), '/');
     if (location.endsWith('/')) {
       return location.substring(0, location.length - 1);
     }
@@ -871,23 +876,30 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
       // find matching reference
       var uri = Uri.parse(configuration.location ?? '');
       var query = uri.query;
+      var path = uri.path;
+      if (path.isEmpty) {
+        path = initialLocation;
+      }
       PathGroup? pathGroup;
       String? internalPath;
       String? nestedPath;
       paths.keys.forEach((iterationPathGroup) {
-        var match = iterationPathGroup.pattern.firstMatch(uri.path);
+        var match = iterationPathGroup.pattern.firstMatch(path);
         if (match != null) {
           // longest matched path takes precidence
           if (iterationPathGroup.length > (pathGroup?.length ?? -1)) {
-            var iterationNestedPath = match.input.substring(match.end);
-            // nestedPath location must start with '/'
-            if (iterationNestedPath.isNotEmpty && iterationNestedPath[0] != '/') {
-              iterationNestedPath = '/' + iterationNestedPath;
-            }
+            var iterationRemainingPath = match.input.substring(match.end);
             pathGroup = iterationPathGroup;
             internalPath = match.group(0);
-            nestedPath =
-                iterationNestedPath.isEmpty && query.isEmpty ? null : iterationNestedPath + '?' + query;
+            // nestedPath location must start with '/'
+            if (iterationRemainingPath.isNotEmpty &&
+                iterationRemainingPath[0] != '/') {
+              iterationRemainingPath = '/' + iterationRemainingPath;
+            }
+            // when no remaining path, nested navigator sets neseted path during build
+            nestedPath = iterationRemainingPath.isEmpty && query.isEmpty
+                ? null
+                : iterationRemainingPath + '?' + query;
           }
         }
       });
