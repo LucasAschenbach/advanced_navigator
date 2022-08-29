@@ -827,7 +827,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
 
   /// Adds pageless route to top of navigator route stack.
   @optionalTypeArgs
-  Future<T?> attach<T extends Object>(Route<T> route) {
+  Future<T?> attach<T extends Object>(Route<T> route) async {
     var navigator = navigatorKey.currentState;
     return navigator?.push<T>(route);
   }
@@ -835,7 +835,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   /// Adds pageless route with given name to top of navigator route stack.
   @optionalTypeArgs
   Future<T?> attachNamed<T extends Object>(String routeName,
-      {Object? arguments}) {
+      {Object? arguments}) async {
     var navigator = navigatorKey.currentState;
     return navigator?.pushNamed<T>(routeName, arguments: arguments);
   }
