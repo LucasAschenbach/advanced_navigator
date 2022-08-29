@@ -4,8 +4,8 @@ class NestedBackButtonDispatcher extends ChildBackButtonDispatcher {
   NestedBackButtonDispatcher(
     BackButtonDispatcher parent, {
     required Route route,
-  }) : _route = route,
-       super(parent);
+  })  : _route = route,
+        super(parent);
 
   final Route _route;
 

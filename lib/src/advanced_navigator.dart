@@ -221,7 +221,7 @@ class AdvancedNavigator extends StatefulWidget {
   ///
   /// The `skip` argument denominates the number of instances to be skipped when
   /// searching up the widget tree for an instance of [AdvancedNavigator].
-  /// 
+  ///
   /// With the `tag` argument specified, only navigators with a matching tag
   /// will be considered. Should multiple navigators carry a matching tag, the
   /// closest instance after skipping `skip` instances will be returned.
@@ -230,7 +230,7 @@ class AdvancedNavigator extends StatefulWidget {
   /// the state from the furthest instance of this class is given instead.
   /// Useful for pushing contents above all subsequent instances of
   /// [AdvancedNavigator].
-  /// 
+  ///
   /// If there is no mathcing [AdvancedNavigator] in the give `context`, this
   /// function will throw a [FlutterError] in debug mode, and an exception in
   /// release mode.
@@ -275,7 +275,7 @@ class AdvancedNavigator extends StatefulWidget {
   ///
   /// The `skip` argument denominates the number of instances to be skipped when
   /// searching up the widget tree for an instance of [AdvancedNavigator].
-  /// 
+  ///
   /// With the `tag` argument specified, only navigators with a matching tag
   /// will be considered. Should multiple navigators carry a matching tag, the
   /// closest instance after skipping `skip` instances will be returned.
@@ -411,7 +411,8 @@ class AdvancedNavigator extends StatefulWidget {
   State<StatefulWidget> createState() => AdvancedNavigatorState();
 }
 
-class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformationObservable {
+class AdvancedNavigatorState extends State<AdvancedNavigator>
+    with RouteInformationObservable {
   late GlobalKey _routerKey;
 
   bool _initDelegated = false;
@@ -421,11 +422,13 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
 
   Set<AdvancedNavigatorState> _children = {};
 
-  NavigatorState? get navigatorState => _routerDelegate.navigatorKey.currentState;
+  NavigatorState? get navigatorState =>
+      _routerDelegate.navigatorKey.currentState;
 
   String? get tag => widget.tag;
 
-  RouteInformation? get currentNestedPath => _routerDelegate._currentNestedPath;
+  AdvancedRouteInformation? get currentNestedPath =>
+      _routerDelegate._currentNestedPath;
 
   @override
   void initState() {
@@ -565,11 +568,11 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
         );
       } else {
         // navigator is at root
-        initialLocation =
-            WidgetsBinding.instance.window.defaultRouteName != AdvancedNavigator.defaultPathName
-                ? WidgetsBinding.instance.window.defaultRouteName
-                : initialLocation;
-        initialRouteInformation = RouteInformation(
+        initialLocation = WidgetsBinding.instance.window.defaultRouteName !=
+                AdvancedNavigator.defaultPathName
+            ? WidgetsBinding.instance.window.defaultRouteName
+            : initialLocation;
+        initialRouteInformation = AdvancedRouteInformation(
           location: initialLocation,
         );
         _informationProvider = PlatformRouteInformationProvider(
@@ -588,7 +591,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
               parentBackButtonDispatcher!,
               route: route,
             );
-            parentBackButtonDispatcher.deferTo(backButtonDispatcher as ChildBackButtonDispatcher);
+            parentBackButtonDispatcher
+                .deferTo(backButtonDispatcher as ChildBackButtonDispatcher);
           }
         } else {
           backButtonDispatcher = RootBackButtonDispatcher();
@@ -663,7 +667,8 @@ class RouterConfiguration {
   final AdvancedRouteInformation? nestedPath;
 }
 
-class DefaultRouteInformationParser extends RouteInformationParser<RouteInformation> {
+class DefaultRouteInformationParser
+    extends RouteInformationParser<AdvancedRouteInformation> {
   const DefaultRouteInformationParser();
 
   @override
@@ -697,7 +702,9 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
     required this.observers,
     required this.restorationScopeId,
     required this.tag,
-  }) : assert(paths.isNotEmpty || onGeneratePath != null || onUnknownPath != null);
+  }) : assert(paths.isNotEmpty ||
+            onGeneratePath != null ||
+            onUnknownPath != null);
 
   final BuildContext context;
   final void Function(AdvancedRouteInformation?) onNestedPathUpdate;
@@ -840,7 +847,8 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
     if (navigator?.canPop() ?? false) {
       navigator?.pop<T>(result);
     } else {
-      var advancedNavigator = context.findAncestorStateOfType<AdvancedNavigatorState>();
+      var advancedNavigator =
+          context.findAncestorStateOfType<AdvancedNavigatorState>();
       if (advancedNavigator != null) {
         advancedNavigator.pop<T>(result);
       }
@@ -863,9 +871,9 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   }
 
   @override
-  RouteInformation get currentConfiguration {
-    var rawPath = (_currentInternalPath.location ?? '') + (_currentNestedPath?.location ?? '');
-    return RouteInformation(
+  AdvancedRouteInformation get currentConfiguration {
+    var rawPath = (_currentInternalPath.location ?? '') +
+        (_currentNestedPath?.location ?? '');
     return AdvancedRouteInformation(
       location: _cleanPath(rawPath),
       state: _currentInternalPath.state,

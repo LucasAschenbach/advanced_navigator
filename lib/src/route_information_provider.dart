@@ -16,7 +16,8 @@ class RouteInformationObservable {
 
   AdvancedRouteInformation? _observedRouteInformation;
 
-  AdvancedRouteInformation? get observedRouteInformation => _observedRouteInformation;
+  AdvancedRouteInformation? get observedRouteInformation =>
+      _observedRouteInformation;
 
   set observedRouteInformation(AdvancedRouteInformation? value) {
     if (_observedRouteInformation == value) {
@@ -57,7 +58,8 @@ class RouteInformationObservable {
 /// to its `currentRouteInformation`
 ///
 abstract class RouteInformationObserver {
-  Future<bool> didPushRouteInformation(RouteInformation? routeInformation) => Future<bool>.value(false);
+  Future<bool> didPushRouteInformation(RouteInformation? routeInformation) =>
+      Future<bool>.value(false);
 }
 
 /// Route information provider working supplementary to a single root provider
@@ -67,7 +69,8 @@ class NestedRouteInformationProvider extends RouteInformationProvider
     this._parent, {
     required RouteInformation initialRouteInformation,
   })  : _initialRouteInformation = initialRouteInformation,
-        _value = initialRouteInformation = _parent.currentNestedPath ?? initialRouteInformation;
+        _value = initialRouteInformation =
+            _parent.currentNestedPath ?? initialRouteInformation;
 
   final AdvancedNavigatorState _parent;
 
@@ -80,8 +83,10 @@ class NestedRouteInformationProvider extends RouteInformationProvider
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(covariant AdvancedRouteInformation routeInformation,
-      {RouteInformationReportingType type = RouteInformationReportingType.none}) {
+  void routerReportsNewRouteInformation(
+      covariant AdvancedRouteInformation routeInformation,
+      {RouteInformationReportingType type =
+          RouteInformationReportingType.none}) {
     // notify parent of changes in nested navigator
     parent.updatedSubtree(routeInformation);
     _value = routeInformation;
@@ -116,7 +121,8 @@ class NestedRouteInformationProvider extends RouteInformationProvider
   }
 
   @override
-  Future<bool> didPushRouteInformation(RouteInformation? routeInformation) async {
+  Future<bool> didPushRouteInformation(
+      RouteInformation? routeInformation) async {
     assert(hasListeners);
     _parentReportsNewRouteInformation(routeInformation);
     return true;
@@ -124,8 +130,10 @@ class NestedRouteInformationProvider extends RouteInformationProvider
 }
 
 /// Route information provider with no communication to external sources
-class EmptyRouteInformationProvider extends RouteInformationProvider with ChangeNotifier {
-  EmptyRouteInformationProvider({required AdvancedRouteInformation initialRouteInformation})
+class EmptyRouteInformationProvider extends RouteInformationProvider
+    with ChangeNotifier {
+  EmptyRouteInformationProvider(
+      {required AdvancedRouteInformation initialRouteInformation})
       : _value = initialRouteInformation;
 
   @override
@@ -133,8 +141,10 @@ class EmptyRouteInformationProvider extends RouteInformationProvider with Change
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(covariant AdvancedRouteInformation routeInformation,
-      {RouteInformationReportingType type = RouteInformationReportingType.none}) {
+  void routerReportsNewRouteInformation(
+      covariant AdvancedRouteInformation routeInformation,
+      {RouteInformationReportingType type =
+          RouteInformationReportingType.none}) {
     _value = routeInformation;
   }
 }
