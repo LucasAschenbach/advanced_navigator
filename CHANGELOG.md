@@ -1,3 +1,10 @@
+# 1.0.0
+* **BREAKING**: Navigation operations can now take arbitrary objects as arguments in addition to path arguments
+  * Path arguments are now accessed from `PathArguments.path`
+* Fix: nested paths not interpolated using initial location when empty (particularly caused problems when initial location of nested navigators was set to '/')
+* Improved error messages
+* Formatting
+
 # 0.2.1+3
 * Fix static analysis
 
