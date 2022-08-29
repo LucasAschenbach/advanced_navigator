@@ -6,7 +6,7 @@ part 'back_button_dispatcher.dart';
 part 'route_information_provider.dart';
 
 /// A function for building a page stack from route information
-typedef PathFactory = RouterConfiguration? Function(RouteInformation);
+typedef PathFactory = RouterConfiguration? Function(AdvancedRouteInformation);
 
 /// A function for building a page from route settings
 typedef PageFactory = Page? Function(RouteSettings);
@@ -114,10 +114,10 @@ class AdvancedNavigator extends StatefulWidget {
 
   // Page API
   final String? initialLocation;
-  final Map<String, List<Page> Function(Map<String, dynamic>)> paths;
+  final Map<String, List<Page> Function(PathArguments)> paths;
   final PathFactory? onGeneratePath;
   final PathFactory? onUnknownPath;
-  final Map<String, Page Function(Map<String, dynamic>)> pages;
+  final Map<String, Page Function(Object?)> pages;
   final PageFactory? onGeneratePage;
   final PageFactory? onUnknownPage;
   final PopPageCallback? onPopPage;
@@ -203,7 +203,8 @@ class AdvancedNavigator extends StatefulWidget {
     strPattern = '^' + strPattern;
     if (!isNested) strPattern += r'$';
     var pattern = RegExp(strPattern);
-    return PathGroup(pattern, length: pathSegments.length, args: args);
+    return PathGroup(pattern,
+        length: pathSegments.length, nested: isNested, args: args);
   }
 
   /// The router delegate from the closest instance of this class that encloses
@@ -320,34 +321,40 @@ class AdvancedNavigator extends StatefulWidget {
     return navigator;
   }
 
-  static void open(BuildContext context, List<Page> pages, [Object? state]) {
-    AdvancedNavigator.of(context).open(pages, state);
+  static void open(BuildContext context, List<Page> pages, {Object? state}) {
+    AdvancedNavigator.of(context).open(pages, state: state);
   }
 
-  static Future<void> openNamed(BuildContext context, String location, [Object? state]) async {
-    await AdvancedNavigator.of(context).openNamed(location, state);
+  static Future<void> openNamed(BuildContext context, String location,
+      {Object? state, Object? arguments}) async {
+    await AdvancedNavigator.of(context)
+        .openNamed(location, state: state, arguments: arguments);
   }
 
   @optionalTypeArgs
-  static Future<T?> push<T extends Object>(BuildContext context, Page<T> page) async {
+  static Future<T?> push<T extends Object>(BuildContext context, Page<T> page) {
     return AdvancedNavigator.of(context).push(page);
   }
 
   @optionalTypeArgs
-  static Future<T?> pushNamed<T extends Object>(BuildContext context, String name,
-      {Map<String, dynamic>? arguments}) async {
+  static Future<T?> pushNamed<T extends Object>(
+      BuildContext context, String name,
+      {Object? arguments}) {
     return AdvancedNavigator.of(context).pushNamed(name, arguments: arguments);
   }
 
   @optionalTypeArgs
-  static Future<T?> attach<T extends Object>(BuildContext context, Route<T> route) async {
+  static Future<T?> attach<T extends Object>(
+      BuildContext context, Route<T> route) {
     return AdvancedNavigator.of(context).attach(route);
   }
 
   @optionalTypeArgs
-  static Future<T?> attachNamed<T extends Object>(BuildContext context, String name,
-      {Object? arguments}) async {
-    return AdvancedNavigator.of(context).attachNamed(name, arguments: arguments);
+  static Future<T?> attachNamed<T extends Object>(
+      BuildContext context, String name,
+      {Object? arguments}) {
+    return AdvancedNavigator.of(context)
+        .attachNamed(name, arguments: arguments);
   }
 
   /// Pop the top-most route off the navigator that most tightly encloses the
@@ -442,7 +449,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
 
   /// Update `_currentNestedPath` from router delegate with new route
   /// information from nested navigators and notify route information provider
-  void updatedSubtree(RouteInformation? subtreeConfiguration) {
+  void updatedSubtree(AdvancedRouteInformation? subtreeConfiguration) {
     _routerDelegate._currentNestedPath = subtreeConfiguration;
     var configuration = _routerDelegate.currentConfiguration;
     //TODO: check type
@@ -465,24 +472,25 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
   // NAVIGATION API
 
   /// Opens given path with its entire history stack.
-  void open(List<Page> pages, [Object? state]) {
-    _routerDelegate.open(pages, state);
+  void open(List<Page> pages, {Object? state}) {
+    _routerDelegate.open(pages, state: state);
   }
 
   /// Opens path from given location reference with its entire history stack.
-  Future<void> openNamed(String location, [Object? state]) async {
-    return _routerDelegate.openNamed(location, state);
+  Future<void> openNamed(String location, {Object? state, Object? arguments}) {
+    return _routerDelegate.openNamed(location,
+        state: state, arguments: arguments);
   }
 
   /// Pushes given page to top of navigator page stack and inflates it.
   @optionalTypeArgs
-  Future<T?> push<T extends Object>(Page<T> page) async {
+  Future<T?> push<T extends Object>(Page<T> page) {
     return _routerDelegate.push<T>(page);
   }
 
   /// Pushes page with given name to top of navigator page stack and inflates it.
   @optionalTypeArgs
-  Future<T?> pushNamed<T extends Object>(String name, {Map<String, dynamic>? arguments}) async {
+  Future<T?> pushNamed<T extends Object>(String name, {Object? arguments}) {
     return _routerDelegate.pushNamed<T>(name, arguments: arguments);
   }
 
@@ -494,7 +502,8 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
 
   /// Adds pageless route with given name to top of navigator route stack.
   @optionalTypeArgs
-  Future<T?> attachNamed<T extends Object>(String routeName, {Object? arguments}) {
+  Future<T?> attachNamed<T extends Object>(String routeName,
+      {Object? arguments}) {
     return _routerDelegate.attachNamed<T>(routeName, arguments: arguments);
   }
 
@@ -506,6 +515,9 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
 
   @override
   Widget build(BuildContext context) {
+    var initialLocation =
+        widget.initialLocation ?? AdvancedNavigator.defaultPathName;
+
     // persist state on rebuild: ??=
     if (!_initDelegated) {
       _routerDelegate = DefaultRouterDelegate(
@@ -536,8 +548,7 @@ class AdvancedNavigatorState extends State<AdvancedNavigator> with RouteInformat
     // persist state on rebuild: == null
     var ancestor = context.findAncestorStateOfType<AdvancedNavigatorState>();
     if (_informationProvider == null) {
-      var initialLocation = widget.initialLocation ?? AdvancedNavigator.defaultPathName;
-      var initialRouteInformation = RouteInformation(
+      var initialRouteInformation = AdvancedRouteInformation(
         location: initialLocation,
       );
       if (widget.parent != null) {
@@ -609,6 +620,34 @@ class PathGroup {
 }
 
 @immutable
+class PathArguments {
+  const PathArguments({
+    this.path = const <String, dynamic>{},
+    this.arguments,
+  });
+
+  final Map<String, dynamic> path;
+  final Object? arguments;
+}
+
+@immutable
+class AdvancedRouteInformation extends RouteInformation {
+  const AdvancedRouteInformation({
+    String? location,
+    Object? state,
+    this.arguments,
+  }) : super(location: location, state: state);
+
+  final Object? arguments;
+
+  factory AdvancedRouteInformation.from(RouteInformation routeInformation) =>
+      AdvancedRouteInformation(
+        location: routeInformation.location,
+        state: routeInformation.state,
+      );
+}
+
+@immutable
 class RouterConfiguration {
   const RouterConfiguration({
     required this.pages,
@@ -617,22 +656,25 @@ class RouterConfiguration {
   });
 
   final List<Page> pages;
-  final RouteInformation? internalPath;
-  final RouteInformation? nestedPath;
+  final AdvancedRouteInformation? internalPath;
+  final AdvancedRouteInformation? nestedPath;
 }
 
 class DefaultRouteInformationParser extends RouteInformationParser<RouteInformation> {
   const DefaultRouteInformationParser();
 
   @override
-  SynchronousFuture<RouteInformation> parseRouteInformation(RouteInformation routeInformation) =>
-      SynchronousFuture(routeInformation);
+  SynchronousFuture<AdvancedRouteInformation> parseRouteInformation(
+          RouteInformation routeInformation) =>
+      SynchronousFuture(AdvancedRouteInformation.from(routeInformation));
 
   @override
-  RouteInformation restoreRouteInformation(RouteInformation routeInformation) => routeInformation;
+  RouteInformation restoreRouteInformation(
+          AdvancedRouteInformation routeInformation) =>
+      routeInformation;
 }
 
-class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
+class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
   DefaultRouterDelegate({
     required this.context,
@@ -654,11 +696,11 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   }) : assert(paths.isNotEmpty || onGeneratePath != null || onUnknownPath != null);
 
   final BuildContext context;
-  final void Function(RouteInformation?) onNestedPathUpdate;
-  final Map<PathGroup, List<Page> Function(Map<String, dynamic>)> paths;
+  final void Function(AdvancedRouteInformation?) onNestedPathUpdate;
+  final Map<PathGroup, List<Page> Function(PathArguments)> paths;
   final PathFactory? onGeneratePath;
   final PathFactory? onUnknownPath;
-  final Map<String, Page Function(Map<String, dynamic>)> pages;
+  final Map<String, Page Function(Object?)> pages;
   final PageFactory? onGeneratePage;
   final PageFactory? onUnknownPage;
   final PopPageCallback? onPopPage;
@@ -670,19 +712,21 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   final String? restorationScopeId;
   final String? tag;
 
-  RouteInformation _currentInternalPath = RouteInformation();
-  RouteInformation? _currentNestedPath;
+  AdvancedRouteInformation _currentInternalPath = AdvancedRouteInformation();
+  AdvancedRouteInformation? _currentNestedPath;
   List<Page> _pages = [];
 
   /// Opens given path with its entire history stack.
-  void open(List<Page> pages, [Object? state]) {
+  void open(List<Page> pages, {Object? state}) {
     _pages = pages;
     notifyListeners();
   }
 
   /// Opens path from given location reference with its entire history stack.
-  Future<void> openNamed(String location, [Object? state]) async {
-    var configuration = RouteInformation(location: location, state: state);
+  Future<void> openNamed(String location,
+      {Object? state, Object? arguments}) async {
+    var configuration = AdvancedRouteInformation(
+        location: location, state: state, arguments: arguments);
     await setNewRoutePath(configuration);
   }
 
@@ -700,10 +744,11 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   ///
   /// Pushes page with given name to top of navigator page stack and inflates it.
   @optionalTypeArgs
-  Future<T?> pushNamed<T extends Object>(String name, {Map<String, dynamic>? arguments}) async {
+  Future<T?> pushNamed<T extends Object>(String name,
+      {Object? arguments}) async {
     Page? page;
     if (pages.containsKey(name)) {
-      page = pages[name]!(arguments ?? <String, dynamic>{});
+      page = pages[name]!(arguments);
     } else {
       // generate page with callback
       assert(() {
@@ -759,14 +804,15 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
 
   /// Adds pageless route to top of navigator route stack.
   @optionalTypeArgs
-  Future<T?> attach<T extends Object>(Route<T> route) async {
+  Future<T?> attach<T extends Object>(Route<T> route) {
     var navigator = navigatorKey.currentState;
     return navigator?.push<T>(route);
   }
 
   /// Adds pageless route with given name to top of navigator route stack.
   @optionalTypeArgs
-  Future<T?> attachNamed<T extends Object>(String routeName, {Object? arguments}) async {
+  Future<T?> attachNamed<T extends Object>(String routeName,
+      {Object? arguments}) {
     var navigator = navigatorKey.currentState;
     return navigator?.pushNamed<T>(routeName, arguments: arguments);
   }
@@ -804,19 +850,22 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
   RouteInformation get currentConfiguration {
     var rawPath = (_currentInternalPath.location ?? '') + (_currentNestedPath?.location ?? '');
     return RouteInformation(
+    return AdvancedRouteInformation(
       location: _cleanPath(rawPath),
       state: _currentInternalPath.state,
+      arguments: _currentInternalPath.arguments,
     );
   }
 
   @override
-  SynchronousFuture<void> setNewRoutePath(RouteInformation configuration) {
+  SynchronousFuture<void> setNewRoutePath(
+      covariant AdvancedRouteInformation configuration) {
     if (configuration == _currentInternalPath) {
       return SynchronousFuture(null);
     }
     List<Page>? changedPages;
-    RouteInformation? currentInternalPath;
-    RouteInformation? currentNestedPath;
+    AdvancedRouteInformation? currentInternalPath;
+    AdvancedRouteInformation? currentNestedPath;
     // check for match in paths map
     if (paths.isNotEmpty) {
       // find matching reference
@@ -845,15 +894,22 @@ class DefaultRouterDelegate extends RouterDelegate<RouteInformation>
       // update router config if match found
       if (pathGroup != null) {
         // parse args
-        var args = <String, String>{};
-        args.addAll(uri.queryParameters);
-        args.addAll(pathGroup!.args.map((pos, argName) => MapEntry(argName, uri.pathSegments[pos])));
+        var pathArgs = <String, String>{};
+        pathArgs.addAll(uri.queryParameters);
+        pathArgs.addAll(pathGroup!.args
+            .map((pos, argName) => MapEntry(argName, uri.pathSegments[pos])));
+        var args =
+            PathArguments(path: pathArgs, arguments: configuration.arguments);
         changedPages = paths[pathGroup]?.call(args);
-        currentInternalPath = RouteInformation(
+        currentInternalPath = AdvancedRouteInformation(
           location: internalPath,
           state: configuration.state,
+          arguments: configuration.arguments,
         );
-        currentNestedPath = nestedPath == null ? null : RouteInformation(location: nestedPath);
+        currentNestedPath = nestedPath == null
+            ? null
+            : AdvancedRouteInformation(
+                location: nestedPath, arguments: configuration.arguments);
       }
     }
     // generate path with callback

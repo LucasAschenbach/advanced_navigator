@@ -14,11 +14,11 @@ part of 'advanced_navigator.dart';
 class RouteInformationObservable {
   final List<RouteInformationObserver> _observers = [];
 
-  RouteInformation? _observedRouteInformation;
+  AdvancedRouteInformation? _observedRouteInformation;
 
-  RouteInformation? get observedRouteInformation => _observedRouteInformation;
+  AdvancedRouteInformation? get observedRouteInformation => _observedRouteInformation;
 
-  set observedRouteInformation(RouteInformation? value) {
+  set observedRouteInformation(AdvancedRouteInformation? value) {
     if (_observedRouteInformation == value) {
       return;
     }
@@ -80,7 +80,7 @@ class NestedRouteInformationProvider extends RouteInformationProvider
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(RouteInformation routeInformation,
+  void routerReportsNewRouteInformation(covariant AdvancedRouteInformation routeInformation,
       {RouteInformationReportingType type = RouteInformationReportingType.none}) {
     // notify parent of changes in nested navigator
     parent.updatedSubtree(routeInformation);
@@ -125,7 +125,7 @@ class NestedRouteInformationProvider extends RouteInformationProvider
 
 /// Route information provider with no communication to external sources
 class EmptyRouteInformationProvider extends RouteInformationProvider with ChangeNotifier {
-  EmptyRouteInformationProvider({required RouteInformation initialRouteInformation})
+  EmptyRouteInformationProvider({required AdvancedRouteInformation initialRouteInformation})
       : _value = initialRouteInformation;
 
   @override
@@ -133,7 +133,7 @@ class EmptyRouteInformationProvider extends RouteInformationProvider with Change
   RouteInformation _value;
 
   @override
-  void routerReportsNewRouteInformation(RouteInformation routeInformation,
+  void routerReportsNewRouteInformation(covariant AdvancedRouteInformation routeInformation,
       {RouteInformationReportingType type = RouteInformationReportingType.none}) {
     _value = routeInformation;
   }
