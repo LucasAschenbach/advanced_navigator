@@ -14,7 +14,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, _) => AdvancedNavigator(
-        tag: 'Main',
+        tag: 'root',
         paths: {
           '/': (_) => [
             CupertinoPage(key: ValueKey('home'), child: ViewHome()),
@@ -22,9 +22,9 @@ class App extends StatelessWidget {
           '/items': (_) => [
             CupertinoPage(key: ValueKey('home'), child: ViewHome()),
           ],
-          'items/{itemId}/...': (args) => [
+          '/items/{itemId}/...': (args) => [
             CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-            CupertinoPage(key: ValueKey('item${args['itemId']}'), child: AppItem(int.parse(args['itemId']))),
+            CupertinoPage(key: ValueKey('item${args.path['itemId']}'), child: AppItem(int.parse(args.path['itemId']))),
           ],
         },
       ),
@@ -66,7 +66,7 @@ class AppItem extends StatelessWidget {
     return Provider<int>.value(
       value: itemNumber,
       child: AdvancedNavigator(
-        tag: 'AppItem',
+        tag: 'item',
         parent: AdvancedNavigator.of(context),
         paths: {
           '/': (_) => [
@@ -92,7 +92,7 @@ class ViewItem extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => AdvancedNavigator.of(context, rootNavigator: true).openNamed('/'),
+          onPressed: () => AdvancedNavigator.of(context, tag: 'root').openNamed('/'),
         ),
         title: Text('Item Details'),
       ),
