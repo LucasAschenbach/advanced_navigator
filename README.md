@@ -10,6 +10,24 @@
   </h1>
 </div>
 
+<details>
+  <summary><b>Breaking Changes: v0.2.1 &rarr; v1.0.0</b></summary>
+
+  The generator functions for each path now take a `PathArguments` object as input instead of a map of `String`s. This is to allow arbitrary objects to be passed as arguments. Arguments passed through the path name can now be accessed using the `PathArguments.path` property. 
+  ```diff
+  AdvancedNavigator(
+    paths: {
+      '/user/{userId}': (args) => [
+  -      CupertinoPage(key: ..., child: Profile(args['userId'])),
+  +      CupertinoPage(key: ..., child: Profile(args.path['userId'])),
+      ],
+    },
+  ),
+  ```
+</details>
+
+---
+
 This package aims at bringing the powerful capabilities of [Navigator 2.0](https://docs.google.com/document/d/1Q0jx0l4-xymph9O6zLaOY4d_f7YFpNWX_eGbzYxr9wY/edit#) to any Flutter app as one easy-to-use widget. The focus was to keep this package simple and familiar to people used to the standard navigator API while at the same time providing even low level customizability for very difficult and unusual navigation logic.
 
 ---
@@ -55,7 +73,7 @@ AdvancedNavigator(
     '/followers/{userId}': (args) => [
       MaterialPage(key: ValueKey('home'), child: ViewHome()),
       MaterialPage(key: ValueKey('followers'), child: ViewFollowers()),
-      MaterialPage(key: ValueKey('profile${args['userId']}'), child: ViewProfile(args['userId'])),
+      MaterialPage(key: ValueKey('profile${args.path['userId']}'), child: ViewProfile(args.path['userId'])),
     ],
   },
 ),
@@ -86,7 +104,7 @@ AdvancedNavigator(
     ],
     '/items/{itemId}': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('item${args['itemId']}'), child: ViewItem(int.parse(args['itemId']))),
+      CupertinoPage(key: ValueKey('item${args.path['itemId']}'), child: ViewItem(int.parse(args.path['itemId']))),
     ],
   },
 );
@@ -147,12 +165,12 @@ AdvancedNavigator(
     // example: '/items/ac9f0e80'
     '/items/{itemId}': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('item${args['itemId']}'), child: ViewItem(args['itemId']),
+      CupertinoPage(key: ValueKey('item${args.path['itemId']}'), child: ViewItem(args.path['itemId']),
     ],
     // example: '/search?q=unicorn&res=50'
     '/search': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-      CupertinoPage(key: ValueKey('search'), child: ViewSearch(args['q'], res: int.parse(args['res']))),
+      CupertinoPage(key: ValueKey('search'), child: ViewSearch(args.path['q'], res: int.parse(args.path['res']))),
     ],
   }
 );
@@ -182,8 +200,8 @@ Example:
 ```dart
 AdvancedNavigator(
   pages: {
-    'post': (args) => CupertinoPage(key: ValueKey('post${args['postId']}'), child: ViewPost(args['postId'])),
-    'profile': (args) => CupertinoPage(key: ValueKey('profile${args['userId']}'), child: ViewProfile(args['userId'])),
+    'post': (args) => CupertinoPage(key: ValueKey('post${args.path['postId']}'), child: ViewPost(args.path['postId'])),
+    'profile': (args) => CupertinoPage(key: ValueKey('profile${args.path['userId']}'), child: ViewProfile(args.path['userId'])),
   }
 );
 ```
@@ -279,7 +297,7 @@ AdvancedNavigator(
     '/myArticles/{articleId}/...': (args) => [
       CupertinoPage(key: ValueKey('home'), child: ViewHome()),
       CupertinoPage(key: ValueKey('myArticles'), child: ViewMyArticles()),
-      CupertinoPage(key: ValueKey('article${args['articleId']}'), child: AppTextEditor(args['articleId'])),
+      CupertinoPage(key: ValueKey('article${args.path['articleId']}'), child: AppTextEditor(args.path['articleId'])),
     ],
   },
 ),
