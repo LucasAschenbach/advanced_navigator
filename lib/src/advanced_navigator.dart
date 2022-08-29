@@ -765,6 +765,8 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
                 'To use the AdvancedNavigator API with named pages (pushNamed), '
                 'the AdvancedNavigator must be provided with either a matching reference '
                 'in the pages map or an onGeneratePage handler.\n'),
+            DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                style: DiagnosticsTreeStyle.errorProperty),
             DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
                 style: DiagnosticsTreeStyle.errorProperty),
           ]);
@@ -779,9 +781,13 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
             throw FlutterError.fromParts(<DiagnosticsNode>[
               ErrorSummary(
                   'AdvancedNavigator.onGeneratePage returned null when requested to build page "$name".'),
-              ErrorDescription('The onGeneratePage callback must never return null, unless an onUnknownPage '
+              ErrorDescription(
+                  'The onGeneratePage callback must never return null, unless an onUnknownPage '
                   'callback is provided as well.'),
-              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
+              DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                  style: DiagnosticsTreeStyle.errorProperty),
+              DiagnosticsProperty<RouterDelegate>(
+                  'The RouterDelegate was', this,
                   style: DiagnosticsTreeStyle.errorProperty),
             ]);
           }
@@ -791,9 +797,14 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
         assert(() {
           if (page == null) {
             throw FlutterError.fromParts(<DiagnosticsNode>[
-              ErrorSummary('Navigator.onUnknownPage returned null when requested to build page "$name".'),
-              ErrorDescription('The onUnknownPage callback must never return null.'),
-              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
+              ErrorSummary(
+                  'Navigator.onUnknownPage returned null when requested to build page "$name".'),
+              ErrorDescription(
+                  'The onUnknownPage callback must never return null.'),
+              DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                  style: DiagnosticsTreeStyle.errorProperty),
+              DiagnosticsProperty<RouterDelegate>(
+                  'The RouterDelegate was', this,
                   style: DiagnosticsTreeStyle.errorProperty),
             ]);
           }
@@ -931,10 +942,13 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
           throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary(
                 'AdvancedNavigator.onGeneratePath was null but the referenced path had no corresponding path in the app.'),
-            ErrorDescription('The referenced path was: "${configuration.location}" '
+            ErrorDescription(
+                'The referenced path was: "${configuration.location}" '
                 'To use the AdvancedNavigator API with named paths (openNamed), '
                 'the AdvancedNavigator must be provided with either a matching reference '
                 'in the paths map or an onGeneratePath handler.\n'),
+            DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                style: DiagnosticsTreeStyle.errorProperty),
             DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
                 style: DiagnosticsTreeStyle.errorProperty),
           ]);
@@ -951,9 +965,13 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
             throw FlutterError.fromParts(<DiagnosticsNode>[
               ErrorSummary(
                   'AdvancedNavigator.onGeneratePath returned null when requested to build path "${configuration.location}".'),
-              ErrorDescription('The onGeneratePath callback must never return null, unless an onUnknownPath '
+              ErrorDescription(
+                  'The onGeneratePath callback must never return null, unless an onUnknownPath '
                   'callback is provided as well.'),
-              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
+              DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                  style: DiagnosticsTreeStyle.errorProperty),
+              DiagnosticsProperty<RouterDelegate>(
+                  'The RouterDelegate was', this,
                   style: DiagnosticsTreeStyle.errorProperty),
             ]);
           }
@@ -968,8 +986,12 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
             throw FlutterError.fromParts(<DiagnosticsNode>[
               ErrorSummary(
                   'Navigator.onUnknownPath returned null when requested to build path "${configuration.location}".'),
-              ErrorDescription('The onUnknownPath callback must never return null.'),
-              DiagnosticsProperty<RouterDelegate>('The RouterDelegate was', this,
+              ErrorDescription(
+                  'The onUnknownPath callback must never return null.'),
+              DiagnosticsProperty<String>('The AdvancedNavigator tag was', tag,
+                  style: DiagnosticsTreeStyle.errorProperty),
+              DiagnosticsProperty<RouterDelegate>(
+                  'The RouterDelegate was', this,
                   style: DiagnosticsTreeStyle.errorProperty),
             ]);
           }
