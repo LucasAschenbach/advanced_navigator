@@ -1,3 +1,7 @@
+# 1.0.1
+* Fix: pages list not updated on pop
+* Fix: Navigator not rebuilding on `push()`, `pushNamed()`
+
 # 1.0.0
 * **BREAKING**: Navigation operations can now take arbitrary objects as arguments in addition to path arguments
   * Path arguments are now accessed from `PathArguments.path`
