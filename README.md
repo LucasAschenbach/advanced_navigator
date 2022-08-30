@@ -193,7 +193,7 @@ AdvancedNavigator(
 
 *Page Navigation* is more generative and can be implemented using the `pages` argument. Instead of replacing the entire page stack, pages are incrementally added to or removed from the top of the page stack. This allows for very long and flexible page histories but is also less predictable and might lead to undesired navigation flows.
 
-`paths` defines a map of pages uniquely identified by a string (page name). Also, the string identifier is not required to comply with any format and can be chosen arbitrarily. Arguments are not contained in the name but are passed along as a separate parameter in the `pushNamed()` function. Calling `pushNamed()` will invoke the page builder function of the associated page name with the given arguments and add the returned page to the top of the page stack.
+`pages` defines a map of pages uniquely identified by a string (page name). Also, the string identifier is not required to comply with any format and can be chosen arbitrarily. Arguments are not contained in the name but are passed along as a separate parameter in the `pushNamed()` function. Calling `pushNamed()` will invoke the page builder function of the associated page name with the given arguments and add the returned page to the top of the page stack.
 
 Example:
 
