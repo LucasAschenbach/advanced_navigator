@@ -726,11 +726,11 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
 
   AdvancedRouteInformation _currentInternalPath = AdvancedRouteInformation();
   AdvancedRouteInformation? _currentNestedPath;
-  List<Page> _pages = [];
+  Iterable<Page> _pages = List.unmodifiable(<Page>[]); // immutable list
 
   /// Opens given path with its entire history stack.
   void open(List<Page> pages, {Object? state}) {
-    _pages = pages;
+    _pages = List.unmodifiable(pages);
     notifyListeners();
   }
 
@@ -747,7 +747,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   /// Pushes given page to top of navigator page stack and inflates it.
   @optionalTypeArgs
   Future<T?> push<T extends Object>(Page<T> page) async {
-    _pages.add(page);
+    _pages = List.unmodifiable(<Page>[..._pages, page]);
     notifyListeners();
     return null;
   }
@@ -819,8 +819,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
         }());
       }
     }
-    assert(page != null);
-    _pages.add(page!);
+    _pages = List.unmodifiable(<Page>[..._pages, page!]);
     notifyListeners();
     return null;
   }
@@ -845,6 +844,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   void pop<T extends Object>([T? result]) {
     var navigator = navigatorKey.currentState;
     if (navigator?.canPop() ?? false) {
+      // pages is removed from _pages in onPopPage callback
       navigator?.pop<T>(result);
     } else {
       var advancedNavigator =
@@ -1010,7 +1010,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
     assert(changedPages != null);
     _currentNestedPath = currentNestedPath;
     _currentInternalPath = currentInternalPath ?? configuration;
-    _pages = changedPages!;
+    _pages = List.unmodifiable(changedPages!);
     onNestedPathUpdate(_currentNestedPath);
     notifyListeners();
     return SynchronousFuture(null);
@@ -1028,7 +1028,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
-      pages: _pages,
+      pages: _pages as List<Page>,
       onPopPage: _onPopPage,
       onGenerateRoute: onGenerateRoute,
       onUnknownRoute: onUnknownRoute,
