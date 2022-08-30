@@ -756,7 +756,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   ///
   /// Pushes page with given name to top of navigator page stack and inflates it.
   @optionalTypeArgs
-  Future<T?> pushNamed<T extends Object>(String name,
+  Future<T?> pushNamed<T extends Object?>(String name,
       {Object? arguments}) async {
     Page? page;
     if (pages.containsKey(name)) {
