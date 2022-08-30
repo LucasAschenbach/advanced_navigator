@@ -1017,10 +1017,11 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
   }
 
   bool _onPopPage(Route<dynamic> route, dynamic result) {
-    if (!route.didPop(result)) {
-      return false;
+    var didPop = onPopPage?.call(route, result) ?? route.didPop(result);
+    if (didPop) {
+      _pages = List.unmodifiable(_pages.take(_pages.length - 1));
     }
-    return true;
+    return didPop;
   }
 
   @override
@@ -1028,7 +1029,7 @@ class DefaultRouterDelegate extends RouterDelegate<AdvancedRouteInformation>
     return Navigator(
       key: navigatorKey,
       pages: _pages,
-      onPopPage: onPopPage ?? _onPopPage,
+      onPopPage: _onPopPage,
       onGenerateRoute: onGenerateRoute,
       onUnknownRoute: onUnknownRoute,
       transitionDelegate: transitionDelegate,
