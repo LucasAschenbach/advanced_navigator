@@ -8,7 +8,7 @@ void main() {
 }
 
 class App extends StatelessWidget {
-  const App({ Key? key }) : super(key: key);
+  const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +17,17 @@ class App extends StatelessWidget {
         tag: 'root',
         paths: {
           '/': (_) => [
-            CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-          ],
+                CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+              ],
           '/items': (_) => [
-            CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-          ],
+                CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+              ],
           '/items/{itemId}/...': (args) => [
-            CupertinoPage(key: ValueKey('home'), child: ViewHome()),
-            CupertinoPage(key: ValueKey('item${args.path['itemId']}'), child: AppItem(int.parse(args.path['itemId']))),
-          ],
+                CupertinoPage(key: ValueKey('home'), child: ViewHome()),
+                CupertinoPage(
+                    key: ValueKey('item${args.path['itemId']}'),
+                    child: AppItem(int.parse(args.path['itemId']))),
+              ],
         },
       ),
     );
@@ -70,12 +72,12 @@ class AppItem extends StatelessWidget {
         parent: AdvancedNavigator.of(context),
         paths: {
           '/': (_) => [
-            CupertinoPage(child: ViewItem()),
-          ],
+                CupertinoPage(child: ViewItem()),
+              ],
           '/edit': (_) => [
-            CupertinoPage(child: ViewItem()),
-            CupertinoPage(child: ViewEditItem()),
-          ],
+                CupertinoPage(child: ViewItem()),
+                CupertinoPage(child: ViewEditItem()),
+              ],
         },
       ),
     );
@@ -92,7 +94,8 @@ class ViewItem extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => AdvancedNavigator.of(context, tag: 'root').openNamed('/'),
+          onPressed: () =>
+              AdvancedNavigator.of(context, tag: 'root').openNamed('/'),
         ),
         title: Text('Item Details'),
       ),
